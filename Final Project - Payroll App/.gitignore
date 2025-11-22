@@ -28,3 +28,6 @@ replay_pid*
 
 #Windows Files
 Thumbs.db
+
+#VS Code files
+.vscode/
