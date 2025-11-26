@@ -2,14 +2,18 @@ package view;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class App extends Application {
     // Create GUI
     public static BorderPane mainPane = new BorderPane();
+    public static Login login = new Login();
+    public static Salary salary = new Salary();
+    public static Employee employee = new Employee();
 
     // Override the start method in the Application class
     @Override
@@ -18,11 +22,16 @@ public class App extends Application {
         mainPane.setPadding(new Insets(20));
       
 
-        // Create hbox to hold center items for border pane
-        HBox hboxCenter = new HBox(30);
+        // Create vbox to hold center items for border pane
+        VBox vboxCenter = new VBox(30);
+        
+        // Add login to vbox
+        vboxCenter.getChildren().add(salary.getSalaryPane());
+        // Center children
+        vboxCenter.setAlignment(Pos.CENTER);
 
-        // Add hbox to border pane
-        mainPane.setCenter(hboxCenter);
+        // Add vbox to border pane
+        mainPane.setCenter(vboxCenter);
 
         // Create a scene and place it in the stage
         Scene scene = new Scene(mainPane);
@@ -33,6 +42,8 @@ public class App extends Application {
         // Set primary stage min size
         primaryStage.setMinHeight(775);
         primaryStage.setMinWidth(900);
+        // Center on screen
+        primaryStage.centerOnScreen();
         // Display the stage
         primaryStage.show();
     }
