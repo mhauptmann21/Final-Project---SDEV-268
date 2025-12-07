@@ -5,36 +5,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TimeEntryDAO {
-    
-    public static List<Double> getWeeklyHours(int employeeId) {
-        List<Double> hours = new ArrayList<>();
 
-        String sql = "SELECT hours_worked FROM time_entry "
-                     + "WHERE employee_id = ? ORDER BY date ASC LIMIT 7";
-        
-        try (Connection conn = Database.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-             
-            stmt.setInt(1, employeeId);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                hours.add(rs.getDouble("hours_worked"));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return hours;
-    }
-
-    public static void lockTimeEntries(int employeeId) {
-        String sql = "UPDATE time_entry SET is_locked = TRUE WHERE employee_id = ?";
+    // Insert new time entry
+    public static void insert(TimeEntry t) {
+        String sql = """
+            INSERT INTO time_entry (employee_id, date, hours_worked, pto_hours, is_locked) 
+            VALUES (?, ?, ?, ?, ?)
+            """;
 
         try (Connection conn = Database.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-             
-            stmt.setInt(1, employeeId);
+
+            stmt.setInt(1, t.employeeId);
+            stmt.setString(2, t.date);
+            stmt.setDouble(3, t.hoursWorked);
+            stmt.setDouble(4, t.ptoHours);
+            stmt.setBoolean(5, t.isLocked);
+
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -42,26 +29,98 @@ public class TimeEntryDAO {
         }
     }
 
-    public static boolean areEntriesLocked(int employeeId) {
-        String sql = "SELECT is_locked FROM time_entry WHERE employee_id = ?";
+    // Update entry
+    public static void update(TimeEntry t) {
+        String sql = """
+            UPDATE time_entry 
+            SET date=?, hours_worked=?, pto_hours=?, is_locked=?
+            WHERE entry_id=?
+            """;
 
         try (Connection conn = Database.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-             
-            stmt.setInt(1, employeeId);
-            ResultSet rs = stmt.executeQuery();
 
+            stmt.setString(1, t.date);
+            stmt.setDouble(2, t.hoursWorked);
+            stmt.setDouble(3, t.ptoHours);
+            stmt.setBoolean(4, t.isLocked);
+            stmt.setInt(5, t.entryId);
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Delete entry
+    public static void delete(int entryId) {
+        try (Connection conn = Database.connect();
+             PreparedStatement stmt = conn.prepareStatement("DELETE FROM timeentry WHERE entry_id=?")) {
+
+            stmt.setInt(1, entryId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Get entries for a specific employee and week
+    public static List<TimeEntry> getWeek(int employeeId, String startDate, String endDate) {
+        String sql = """
+            SELECT * FROM time_entry
+            WHERE employee_id=? AND date BETWEEN ? AND ?
+            ORDER BY date ASC
+            """;
+
+        List<TimeEntry> entries = new ArrayList<>();
+
+        try (Connection conn = Database.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, employeeId);
+            stmt.setString(2, startDate);
+            stmt.setString(3, endDate);
+
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                if (!rs.getBoolean("is_locked")) {
-                    return false;
-                }
+                TimeEntry t = new TimeEntry();
+                t.entryId = rs.getInt("entry_id");
+                t.employeeId = rs.getInt("employee_id");
+                t.date = rs.getString("date");
+                t.hoursWorked = rs.getDouble("hours_worked");
+                t.ptoHours = rs.getDouble("pto_hours");
+                t.isLocked = rs.getBoolean("is_locked");
+                entries.add(t);
             }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return true;
+        return entries;
     }
-}   
 
+    // Lock entries after payroll
+    public static void lockWeek(int employeeId, String start, String end) {
+        String sql = """
+            UPDATE time_entry 
+            SET is_locked = TRUE 
+            WHERE employee_id=? AND date BETWEEN ? AND ?
+            """;
+
+        try (Connection conn = Database.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, employeeId);
+            stmt.setString(2, start);
+            stmt.setString(3, end);
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}

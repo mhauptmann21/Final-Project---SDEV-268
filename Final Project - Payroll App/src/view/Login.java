@@ -1,5 +1,6 @@
 package view;
 
+import controllers.LoginController;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -60,9 +61,8 @@ public class Login {
         // Create login button
         Button loginButton = new Button("Login");
         // Add event handler
-        loginButton.setOnAction(event -> {
-            handleLogin();
-        });
+        loginButton.setOnAction(e -> LoginController.handleLogin(usernameField.getText(), passwordField.getText()));
+
 
         // Create Vbox for buttons
         VBox buttonBox = new VBox(50);
@@ -75,29 +75,29 @@ public class Login {
         // Add labels, text fields, and button to grid
         paneLogin.getChildren().addAll(loginLabel, usernameLabel, usernameField, passwordLabel, passwordField, choiceBox, buttonBox);
     }
-    private void handleLogin() {
-        // get entered username and password
-        String username = usernameField.getText();
-        String password = passwordField.getText();
+    // private void handleLogin() {
+    //     // get entered username and password
+    //     String username = usernameField.getText();
+    //     String password = passwordField.getText();
 
-        // validate credentials
-        // TODO: Replace with actual validation logic 
-        boolean isValid = true; 
+    //     // validate credentials
+    //     // TODO: Replace with actual validation logic 
+    //     boolean isValid = true; 
     
-        // if valid, load appropriate view based on userType
-        if (isValid) {
-            if (userType.equals("Admin")) {
-                App.mainPane.setCenter(App.adminView.getAdminViewPane());
-            } else {
-                App.mainPane.setCenter(App.employeeView.getEmployeeViewPane());
-            } 
-        } else {
-            // show error popup
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Login Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Invalid username or password.");
-            alert.showAndWait();
-        }
-    }   
+    //     // if valid, load appropriate view based on userType
+    //     if (isValid) {
+    //         if (userType.equals("Admin")) {
+    //             App.mainPane.setCenter(App.adminView.getAdminViewPane());
+    //         } else {
+    //             App.mainPane.setCenter(App.employeeView.getEmployeeViewPane());
+    //         } 
+    //     } else {
+    //         // show error popup
+    //         Alert alert = new Alert(Alert.AlertType.ERROR);
+    //         alert.setTitle("Login Error");
+    //         alert.setHeaderText(null);
+    //         alert.setContentText("Invalid username or password.");
+    //         alert.showAndWait();
+    //     }
+    // }   
 }

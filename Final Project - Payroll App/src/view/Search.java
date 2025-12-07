@@ -11,8 +11,8 @@ import server.Employee;
 public class Search {
     private HBox paneSearch;
     private Employee foundEmployee = null;
-    private TextField firsTextField = new TextField();
-    private TextField lasTextField = new TextField();
+    private TextField firstTextField = new TextField();
+    private TextField lastTextField = new TextField();
     
     public Search() {
         search();
@@ -46,12 +46,12 @@ public class Search {
         });
 
         // add items to search pane
-        paneSearch.getChildren().addAll(firstLabel, firsTextField, lastLabel, lasTextField, searchButton);
+        paneSearch.getChildren().addAll(firstLabel, firstTextField, lastLabel, lastTextField, searchButton);
     }
 
     private void clearSearchFields() {
-        firsTextField.clear();
-        lasTextField.clear();
+        firstTextField.clear();
+        lastTextField.clear();
     }
 
     private void clearFoundEmployee() {
@@ -59,7 +59,7 @@ public class Search {
     }
 
     private boolean isSearchFieldsEmpty() {
-        return firsTextField.getText().isEmpty() && lasTextField.getText().isEmpty();
+        return firstTextField.getText().isEmpty() && lastTextField.getText().isEmpty();
     }   
 
     private boolean isEmployeeFound() {
@@ -103,13 +103,14 @@ public class Search {
         }
 
         // get input
-        String firstInput = firsTextField.getText();
-        String lastInput = lasTextField.getText();
+        String firstInput = firstTextField.getText().trim();
+        String lastInput = lastTextField.getText().trim();
 
-        // TODO: implement actual search logic here
+        this.foundEmployee = server.EmployeeDAO.getEmployeeByName(firstInput, lastInput);
 
         this.foundEmployee = null; // TODO: replace with actual search result
-    
+        
+        // show messages
         if (isEmployeeFound()) {
             displayEmployeeFoundMessage();
          

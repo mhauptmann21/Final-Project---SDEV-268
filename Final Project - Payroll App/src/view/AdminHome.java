@@ -1,15 +1,19 @@
 package view;
 
 import javafx.geometry.Pos;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
 
 public class AdminHome {
+
     private VBox paneAdminHome;
-    
-    public AdminHome() {
+    private BorderPane root; // reference to main layout
+
+    // Constructor requires the root BorderPane from App
+    public AdminHome(BorderPane root) {
+        this.root = root;
         adminHome();
     }
 
@@ -19,17 +23,21 @@ public class AdminHome {
 
     /* Create admin home method */
     private void adminHome() {
-        // Create vbox 
-        paneAdminHome = new VBox(10);
-        // Set to center alignment
+        paneAdminHome = new VBox(20);
         paneAdminHome.setAlignment(Pos.CENTER);
-        // set size to max width of child
-        //paneAdminHome.setFillWidth(false);
 
-        //Label
         Label welcomeLabel = new Label("Welcome Admin!");
 
-        // add label to admin home pane
-        paneAdminHome.getChildren().addAll(welcomeLabel);
+        // Create Payroll Button
+        Button payrollRunBtn = new Button("Run Payroll");
+
+        // HANDLE CLICK
+        payrollRunBtn.setOnAction(e -> {
+            PayrollRun pr = new PayrollRun();
+            root.setCenter(pr.getPane());
+        });
+
+        // Add to layout
+        paneAdminHome.getChildren().addAll(welcomeLabel, payrollRunBtn);
     }
 }

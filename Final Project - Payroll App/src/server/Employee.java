@@ -1,42 +1,30 @@
 package server;
 
 public class Employee {
-
     public int employeeId;
     public String firstName;
     public String lastName;
-    public String status;
-    public String payType;
-    public double baseSalary;
-    public String medical;
+    public String status;            // Active / Terminated
+    public String payType;           // HOURLY / SALARY
+    public double baseSalary;        // Salary or hourly rate
+    public String medical;           // SINGLE / FAMILY
     public int dependents;
     public String dateOfBirth;
     public String dateHired;
     public String email;
+    public String username;
+    public String password;
     public String department;
     public String jobTitle;
 
-    // Adding defult constuctor
-    public Employee() {};
-
-    public Employee(int employeeId, String firstName, String lastName, String status,
-                    String payType, double baseSalary, String medical, int dependents,
-                    String dateOfBirth, String dateHired, String email,
-                    String department, String jobTitle) {
-
-        this.employeeId = employeeId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.status = status;
-        this.payType = payType;
-        this.baseSalary = baseSalary;
-        this.medical = medical;
-        this.dependents = dependents;
-        this.dateOfBirth = dateOfBirth;
-        this.dateHired = dateHired;
-        this.email = email;
-        this.department = department;
-        this.jobTitle = jobTitle;
-    }
+    // Optional fields not in DB yet (UI fields)
+    public String gender;
+    public String address1;
+    public String address2;
+    public String city;
+    public String state;
+    public String zip;
+    public String photo;
 }
+
 
