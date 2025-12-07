@@ -1,0 +1,22 @@
+.oddDay-hbox {
+    -fx-background-color: darkgrey; 
+    -fx-padding: 10px;
+}
+
+.evenDay-hbox {
+    -fx-background-color: lightgrey; 
+    -fx-padding: 10px;
+}
+
+.search-hbox {
+    -fx-background-color: darkgrey; 
+    -fx-padding: 5px;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
