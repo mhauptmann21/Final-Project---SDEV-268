@@ -2,39 +2,40 @@ package view;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class App extends Application {
     // Create GUI
     public static BorderPane mainPane = new BorderPane();
     public static Login login = new Login();
-    public static Salary salary = new Salary();
-    public static Employee employee = new Employee();
+    public static AdminView adminView = new AdminView();
+    public static EmployeeView employeeView = new EmployeeView();
+    public static NoEmployeeAlert noEmployeeAlert = new NoEmployeeAlert();
 
     // Override the start method in the Application class
     @Override
     public void start(Stage primaryStage) {
         // Add padding to main pain
-        mainPane.setPadding(new Insets(20));
-      
-
-        // Create vbox to hold center items for border pane
-        VBox vboxCenter = new VBox(30);
+        mainPane.setPadding(new Insets(10));
         
-        // Add login to vbox
-        vboxCenter.getChildren().add(salary.getSalaryPane());
-        // Center children
-        vboxCenter.setAlignment(Pos.CENTER);
+        // Add login to main pane
+        mainPane.setCenter(login.getLoginPane());
 
-        // Add vbox to border pane
-        mainPane.setCenter(vboxCenter);
+        // Create exit button
+        Button exitButton = new Exit().getExitButton();
+        // Set min width
+        exitButton.setMinWidth(150);
+        // Add exit button to bottom left of main pane
+        mainPane.setBottom(exitButton);
+        BorderPane.setAlignment(exitButton, javafx.geometry.Pos.CENTER_LEFT);
 
         // Create a scene and place it in the stage
         Scene scene = new Scene(mainPane);
+        // Add css to scene
+        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
         // Set the stage title
         primaryStage.setTitle("Payroll Application"); 
         // Place the scene in the stage

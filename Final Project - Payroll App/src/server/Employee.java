@@ -16,6 +16,9 @@ public class Employee {
     public String department;
     public String jobTitle;
 
+    // Adding defult constuctor
+    public Employee() {};
+
     public Employee(int employeeId, String firstName, String lastName, String status,
                     String payType, double baseSalary, String medical, int dependents,
                     String dateOfBirth, String dateHired, String email,
