@@ -4,7 +4,7 @@ import java.util.List;
 
 public class PayrollService {
 
-    public static void calculatePayroll(int employeeId) {
+    public static void calculatePayroll(int employeeId, String periodStart, String periodEnd) {
 
         // Load employees
         Employee emp = EmployeeDAO.getEmployeeById(employeeId);

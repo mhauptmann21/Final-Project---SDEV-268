@@ -13,7 +13,7 @@ public class AdminView {
     private EmployeePane employeePane;
     private Time time = new Time();
     private Search search = new Search();
-    private AdminHome adminHome = new AdminHome();
+    private AdminHome adminHome;
     private AdminNavBar adminNavBar = new AdminNavBar();
     private Employee currentEmployee = null;
 
@@ -70,6 +70,7 @@ public class AdminView {
         // Initialize panes
         this.employeePane = new EmployeePane(this);
         this.salary = new Salary(this);
+        this.adminHome = new AdminHome(paneAdminView);
 
         // Add admin home to vbox
         vboxCenter.getChildren().add(adminHome.getAdminHomePane());

@@ -1,5 +1,6 @@
 package view;
 
+import controllers.EmployeeController;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -290,19 +291,7 @@ public class EmployeePane {
         // get entered data
         getEnteredData();
 
-        //TODO: update the Employee object with the entered data
-        // probably would be better to add setters to Employee class but this does work
-        // Also should probably add validation before updating
-
-        emp.employeeId = Integer.parseInt(this.id);
-        emp.department = this.department;
-        emp.jobTitle = this.title;
-        emp.firstName = this.first;
-        emp.lastName = this.last;
-        emp.status = this.status;
-        emp.dateOfBirth = this.dob;
-        emp.payType = this.payType;
-        emp.email = this.email;
+        EmployeeController.update(emp);
 
         //TODO: add: sur, gender, address1, address2, city, state, zip, photo
 
@@ -325,7 +314,7 @@ public class EmployeePane {
         newEmp.email = this.email;  
         //TODO: add missing fields
 
-        //TODO: add logic to save new employee to database
+        EmployeeController.add(newEmp);
 
         //clear fields after adding
         clearFields();
@@ -333,7 +322,7 @@ public class EmployeePane {
     
     private void handleDeleteEmployee(Employee emp) {
         if (emp != null) {  
-            //TODO: add logic to delete employee from database
+            EmployeeController.delete(emp.employeeId);
 
             //clear fields after deleting
             clearFields();  

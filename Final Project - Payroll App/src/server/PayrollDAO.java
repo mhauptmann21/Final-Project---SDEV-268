@@ -2,6 +2,7 @@ package server;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PayrollDAO {
@@ -51,5 +52,39 @@ public class PayrollDAO {
             e.printStackTrace();
         }
     }
+
+    // inside server.PayrollDAO (add this method)
+    public static server.Payroll getLatestPayrollForEmployee(int employeeId) {
+        String sql = "SELECT * FROM payroll WHERE employee_id = ? ORDER BY payroll_id DESC LIMIT 1";
+        try (Connection conn = Database.connect();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, employeeId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                server.Payroll p = new server.Payroll();
+                p.payrollId = rs.getInt("payroll_id");
+                p.employeeId = rs.getInt("employee_id");
+                p.periodStart = rs.getString("period_start");
+                p.periodEnd = rs.getString("period_end");
+                p.grossPay = rs.getDouble("gross_pay");
+                p.medicalDeduction = rs.getDouble("medical_deduction");
+                p.dependentsStipend = rs.getDouble("dependents_stipend");
+                p.stateTax = rs.getDouble("state_tax");
+                p.federalTaxEmp = rs.getDouble("federal_tax_emp");
+                p.federalTaxEmployer = rs.getDouble("federal_tax_employer");
+                p.socialSecEmp = rs.getDouble("social_sec_emp");
+                p.socialSecEmployer = rs.getDouble("social_sec_employer");
+                p.medicareEmp = rs.getDouble("medicare_emp");
+                p.medicareEmployer = rs.getDouble("medicare_employer");
+                p.netPay = rs.getDouble("net_pay");
+                return p;
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
     
 }
