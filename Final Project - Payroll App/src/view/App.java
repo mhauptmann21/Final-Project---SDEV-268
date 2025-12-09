@@ -10,7 +10,11 @@ import javafx.stage.Stage;
 public class App extends Application {
 
     public static BorderPane mainPane = new BorderPane();
+
+    public static Register register = new Register();
     public static Login login = new Login();
+    
+
     public static AdminView adminView;
     public static EmployeeView employeeView = new EmployeeView();
     public static NoEmployeeAlert noEmployeeAlert = new NoEmployeeAlert();

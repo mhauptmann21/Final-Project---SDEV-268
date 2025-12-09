@@ -16,6 +16,7 @@ public class Employee {
     public String password;
     public String department;
     public String jobTitle;
+    public String hashedPassword;
 
     // Optional fields not in DB yet (UI fields)
     public String gender;
