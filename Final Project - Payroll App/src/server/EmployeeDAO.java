@@ -1,7 +1,9 @@
 package server;
 
 import java.sql.*;
-import java.util.Optional;
+import java.time.LocalDate;
+
+import security.SecurityModule;
 
 public class EmployeeDAO {
 
@@ -9,30 +11,30 @@ public class EmployeeDAO {
     public static void insertEmployee(Employee e) {
         String sql = """
             INSERT INTO employees (
-                employee_id, first_name, last_name, status, pay_type, base_salary,
-                medical, dependents, date_of_birth, date_hired, email,
-                department, job_title
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                first_name, last_name, status, pay_type, base_salary, medical,
+                dependents, date_of_birth, date_hired, email, username,
+                department, job_title, password
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
         try (Connection conn = Database.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, e.employeeId);
-            stmt.setString(2, e.firstName);
-            stmt.setString(3, e.lastName);
-            stmt.setString(4, e.status);
-            stmt.setString(5, e.payType);
-            stmt.setDouble(6, e.baseSalary);
-            stmt.setString(7, e.medical);
-            stmt.setInt(8, e.dependents);
-            stmt.setString(9, e.dateOfBirth);
-            stmt.setString(10, e.dateHired);
-            stmt.setString(11, e.email);
+            stmt.setString(1, e.firstName);
+            stmt.setString(2, e.lastName);
+            stmt.setString(3, e.status);
+            stmt.setString(4, e.payType);
+            stmt.setDouble(5, e.baseSalary);
+            stmt.setString(6, e.medical);
+            stmt.setInt(7, e.dependents);
+            stmt.setString(8, e.dateOfBirth);
+            stmt.setString(9, e.dateHired);
+            stmt.setString(10, e.email);
+            stmt.setString(11, e.username);
             stmt.setString(12, e.department);
             stmt.setString(13, e.jobTitle);
-
+            stmt.setString(14, SecurityModule.md5Hash(e.password));
+            
             stmt.executeUpdate();
 
         } catch (SQLException ex) {
@@ -40,13 +42,50 @@ public class EmployeeDAO {
         }
     }
 
+    // Adding a new employee from registering
+    public static boolean insertNewEmployee(
+            String firstName,
+            String lastName,
+            String email,
+            String username,
+            String password
+    ) {
+        Employee e = new Employee();
+
+        e.firstName = firstName;
+        e.lastName = lastName;
+        e.email = email;
+        e.username = username;
+        e.password = password;
+
+        // REQUIRED defaults so INSERT works
+        e.status = "ACTIVE";
+        e.payType = "SALARY";          // or HOURLY
+        e.baseSalary = 0.00;           // default
+        e.medical = "SINGLE";          // enum
+        e.dependents = 0;
+        e.dateOfBirth = "2000-01-01";  // TEMP default
+        e.dateHired = LocalDate.now().toString();
+        e.department = "NONE";
+        e.jobTitle = "New Hire";
+
+        try {
+            insertEmployee(e);
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+
     // UPDATE EMPLOYEE
     public static void updateEmployee(Employee e) {
         String sql = """
             UPDATE employees
             SET first_name=?, last_name=?, status=?, pay_type=?, base_salary=?,
                 medical=?, dependents=?, date_of_birth=?, date_hired=?, email=?,
-                department=?, job_title=?
+                department=?, job_title=?, hashedPassword=?
             WHERE employee_id=?
             """;
 

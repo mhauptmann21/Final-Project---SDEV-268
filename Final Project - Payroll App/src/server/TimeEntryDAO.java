@@ -123,4 +123,47 @@ public class TimeEntryDAO {
             e.printStackTrace();
         }
     }
+
+    public static double getWeeklyHours(int employeeId) {
+        double totalHours = 0;
+        String sql = "SELECT SUM(hours) AS total FROM time_entries WHERE employee_id=? AND WEEK(date)=WEEK(CURDATE())";
+
+        try (Connection conn = Database.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, employeeId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                totalHours = rs.getDouble("total");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return totalHours;
+    }
+
+    public static boolean areEntriesLocked(int employeeId) {
+        String sql = "SELECT locked FROM time_entries_lock WHERE employee_id=?";
+        boolean locked = false;
+
+        try (Connection conn = Database.connect();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, employeeId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                locked = rs.getBoolean("locked");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return locked;
+    }
+
 }

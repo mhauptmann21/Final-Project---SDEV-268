@@ -2,25 +2,15 @@ package view;
 
 import controllers.LoginController;
 import javafx.geometry.Pos;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.layout.HBox;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 
 public class Login {
+
     private VBox paneLogin;
     // Create text input fields
     private TextField usernameField = new TextField();
     private PasswordField passwordField = new PasswordField();
-    // Create user type choice box
-    private ChoiceBox<String> choiceBox = new ChoiceBox<>();
-    // Create user type attribute defualts to employee
-    private String userType;
     
     public Login() {
         login();
@@ -46,22 +36,22 @@ public class Login {
         usernameField.setMaxWidth(300);
         passwordField.setMaxWidth(300);
 
-   
-        // Add admin and employee types to choice box
-        choiceBox.getItems().addAll("Employee", "Admin");
-        // Set defualt to employee
-        choiceBox.setValue("Employee");
-        // update userType attribute
-        userType = choiceBox.getValue();
-        // Add event handler to update userType attribute on selection change   
-        choiceBox.setOnAction(event -> {
-            userType = choiceBox.getValue();
-        });
 
         // Create login button
         Button loginButton = new Button("Login");
         // Add event handler
-        loginButton.setOnAction(e -> LoginController.handleLogin(usernameField.getText(), passwordField.getText()));
+        loginButton.setOnAction(e -> 
+            LoginController.handleLogin(
+                usernameField.getText(), 
+                passwordField.getText()
+            )
+        );
+
+        // Register Button - for first-time users
+        Button registerBtn = new Button("Create Account");
+        registerBtn.setOnAction(e ->
+            App.mainPane.setCenter(App.register.getRegisterPane())
+        );
 
 
         // Create Vbox for buttons
@@ -69,11 +59,15 @@ public class Login {
         // Center align
         buttonBox.setAlignment(Pos.CENTER);
         // Add buttons to hbox
-        buttonBox.getChildren().addAll(loginButton);
+        buttonBox.getChildren().addAll(loginButton, registerBtn);
 
 
         // Add labels, text fields, and button to grid
-        paneLogin.getChildren().addAll(loginLabel, usernameLabel, usernameField, passwordLabel, passwordField, choiceBox, buttonBox);
+        paneLogin.getChildren().addAll(
+            loginLabel, 
+            usernameLabel, usernameField, 
+            passwordLabel, passwordField,
+            buttonBox);
     }
     // private void handleLogin() {
     //     // get entered username and password

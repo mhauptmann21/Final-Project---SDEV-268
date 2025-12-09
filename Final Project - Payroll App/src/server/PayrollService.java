@@ -8,7 +8,7 @@ public class PayrollService {
 
         // Load employees
         Employee emp = EmployeeDAO.getEmployeeById(employeeId);
-        List<Double> hours = TimeEntryDAO.getWeeklyHours(employeeId);
+        List<Int> hours = TimeEntryDAO.getWeeklyHours(employeeId);
 
         // Gross Pay
         double gross = PayrollCalculator.calculateGrossPay(
