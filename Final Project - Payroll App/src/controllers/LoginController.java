@@ -21,12 +21,15 @@ public class LoginController {
             return;
         }
 
+        SessionController.setCurrentUser(emp);
+
         // Admin check
         if (emp.jobTitle != null && emp.jobTitle.equalsIgnoreCase("Admin")) {
             App.mainPane.setCenter(App.adminView.getAdminViewPane());
         } else {
             App.mainPane.setCenter(App.employeeView.getEmployeeViewPane());
         }
+
     }
 }
 

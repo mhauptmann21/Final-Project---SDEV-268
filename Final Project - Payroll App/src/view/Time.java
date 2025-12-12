@@ -1,112 +1,144 @@
 package view;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import server.Employee;
-import javafx.collections.ObservableList;
-
 import server.TimeEntry;
-import  controllers.TimeEntryController;
-import java.time.LocalDate;
+import controllers.SessionController;
+import server.TimeEntryDAO;
+
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 
 public class Time {
     private VBox paneTime;
-    
+
+    private int employeeId;
+    private String weekStart;
+
+    // ChoiceBoxes for each day
+    private ChoiceBox<Integer> sundayHours;
+    private ChoiceBox<Integer> mondayHours;
+    private ChoiceBox<Integer> tuesdayHours;
+    private ChoiceBox<Integer> wednesdayHours;
+    private ChoiceBox<Integer> thursdayHours;
+    private ChoiceBox<Integer> fridayHours;
+    private ChoiceBox<Integer> saturdayHours;
+
+    private ChoiceBox<String> sundayType;
+    private ChoiceBox<String> mondayType;
+    private ChoiceBox<String> tuesdayType;
+    private ChoiceBox<String> wednesdayType;
+    private ChoiceBox<String> thursdayType;
+    private ChoiceBox<String> fridayType;
+    private ChoiceBox<String> saturdayType;
+
+    private Label lockedLabel;
+    private Button saveButton;
+
     public Time() {
-        time();
+        paneTime = new VBox(20);
+        paneTime.setPadding(new Insets(25));
+        paneTime.setAlignment(Pos.TOP_CENTER);
+        // set size to max width of child
+        paneTime.setFillWidth(false);
+
+        buildUI();
     }
 
     public VBox getTimePane() {
         return this.paneTime;
     }
 
-    /* Create time method */
-    private void time() {
-        // Create vbox 
-        paneTime = new VBox(10);
-        // Set to center alignment
-        paneTime.setAlignment(Pos.CENTER);
-        // set size to max width of child
-        paneTime.setFillWidth(false);
-        // add spacing
-        paneTime.setSpacing(50);
+    private LocalDate currentWeekStart;
 
-        //Create labels
-        Label employeeLabel = new Label();
-        Label sundayLabel = new Label("Sunday: ");
-        Label mondayLabel = new Label("Monday: ");
-        Label tuesdayLabel = new Label("Tuesday: ");
-        Label wednesdayLabel = new Label("Wednesday: ");
-        Label thursdayLabel = new Label("Thursday: ");
-        Label fridayLabel = new Label("Friday: ");
-        Label saturdayLabel = new Label("Saturday: ");
-
-        // set min label size to 100
-        sundayLabel.setMinWidth(100);
-        mondayLabel.setMinWidth(100);
-        tuesdayLabel.setMinWidth(100);
-        wednesdayLabel.setMinWidth(100);
-        thursdayLabel.setMinWidth(100);
-        wednesdayLabel.setMinWidth(100);
-        fridayLabel.setMinWidth(100);
-        saturdayLabel.setMinWidth(100);
-
-        //Create hours worked choice boxes
-        ChoiceBox<Integer> sundayChoiceBox = new ChoiceBox<>();
-        ChoiceBox<Integer> mondayChoiceBox = new ChoiceBox<>();
-        ChoiceBox<Integer> tuesdayChoiceBox = new ChoiceBox<>();
-        ChoiceBox<Integer> wednesdayChoiceBox = new ChoiceBox<>();
-        ChoiceBox<Integer> thursdayChoiceBox = new ChoiceBox<>();
-        ChoiceBox<Integer> fridayChoiceBox = new ChoiceBox<>();
-        ChoiceBox<Integer> saturdayChoiceBox = new ChoiceBox<>();
-
-        // add hours to choice boxes
-        for (Integer i = 0; i <= 24; i++) {
-            sundayChoiceBox.getItems().add(i);
-            mondayChoiceBox.getItems().add(i);
-            tuesdayChoiceBox.getItems().add(i);
-            wednesdayChoiceBox.getItems().add(i);
-            thursdayChoiceBox.getItems().add(i);
-            fridayChoiceBox.getItems().add(i);
-            saturdayChoiceBox.getItems().add(i);
+    private void buildUI() {
+        Employee user = SessionController.getCurrentUser();
+        if (user == null) {
+            paneTime.getChildren().add(new Label("ERROR: No logged in user."));
+            return;
         }
 
-        // Instantiate list for pto or regular choice boxes
-        ObservableList<String> regOrPTO = FXCollections.observableArrayList("Regular", "PTO"); 
+        this.employeeId = user.employeeId;
 
-        // Create regular or PTO pay choice boxes
-        ChoiceBox<String> sundayPayTypeChoiceBox = new ChoiceBox<>(regOrPTO);
-        ChoiceBox<String> mondayPayTypeChoiceBox = new ChoiceBox<>(regOrPTO);
-        ChoiceBox<String> tuesdayPayTypeChoiceBox = new ChoiceBox<>(regOrPTO);
-        ChoiceBox<String> wednesdayPayTypeChoiceBox = new ChoiceBox<>(regOrPTO);
-        ChoiceBox<String> thursdayPayTypeChoiceBox = new ChoiceBox<>(regOrPTO);
-        ChoiceBox<String> fridayPayTypeChoiceBox = new ChoiceBox<>(regOrPTO);
-        ChoiceBox<String> saturdayPayTypeChoiceBox = new ChoiceBox<>(regOrPTO);
 
-        // Set pto/regular choiceboxes initial values to regurlar
-        sundayPayTypeChoiceBox.setValue("Regular");
-        mondayPayTypeChoiceBox.setValue("Regular");
-        tuesdayPayTypeChoiceBox.setValue("Regular");
-        wednesdayPayTypeChoiceBox.setValue("Regular");
-        thursdayPayTypeChoiceBox.setValue("Regular");
-        fridayPayTypeChoiceBox.setValue("Regular");
-        saturdayPayTypeChoiceBox.setValue("Regular");
+        currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
 
-        // create hboxes for each day
-        HBox sundayBox = new HBox(20, sundayLabel, sundayPayTypeChoiceBox, sundayChoiceBox);
-        HBox mondayBox = new HBox(20, mondayLabel, mondayPayTypeChoiceBox, mondayChoiceBox);
-        HBox tuesdayBox = new HBox(20, tuesdayLabel, tuesdayPayTypeChoiceBox, tuesdayChoiceBox);
-        HBox wednesdayBox = new HBox(20, wednesdayLabel, wednesdayPayTypeChoiceBox, wednesdayChoiceBox);
-        HBox thursdayBox = new HBox(20, thursdayLabel, thursdayPayTypeChoiceBox, thursdayChoiceBox);
-        HBox fridayBox = new HBox(20, fridayLabel, fridayPayTypeChoiceBox, fridayChoiceBox);
-        HBox saturdayBox = new HBox(20, saturdayLabel, saturdayPayTypeChoiceBox, saturdayChoiceBox);
+        LocalDate start = LocalDate.parse(weekStart);
+        LocalDate weekEnd = start.plusDays(6);
+
+        Label title = new Label("Weekly Time Card");
+        title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+        Label employeeLabel = new Label(user.firstName + " " + user.lastName);
+        Label weekLabel;
+
+        Button prevWeekButton = new Button("< Previous Week");
+        Button nextWeekButton = new Button("Next Week >");
+
+        nextWeekButton.setOnAction(e -> {
+            currentWeekStart = currentWeekStart.plusWeeks(1);
+            updateWeekLabel();
+            loadSavedWeek();
+        });
+
+        prevWeekButton.setOnAction(e -> {
+            currentWeekStart = currentWeekStart.minusWeeks(1);
+            updateWeekLabel();
+            loadSavedWeek();
+        });
+
+
+
+        lockedLabel = new Label();
+
+        // Initialize ChoiceBoxes
+        sundayHours = new ChoiceBox<>();
+        mondayHours = new ChoiceBox<>();
+        tuesdayHours = new ChoiceBox<>();
+        wednesdayHours = new ChoiceBox<>();
+        thursdayHours = new ChoiceBox<>();
+        fridayHours = new ChoiceBox<>();
+        saturdayHours = new ChoiceBox<>();
+
+        sundayType = new ChoiceBox<>();
+        mondayType = new ChoiceBox<>();
+        tuesdayType = new ChoiceBox<>();
+        wednesdayType = new ChoiceBox<>();
+        thursdayType = new ChoiceBox<>();
+        fridayType = new ChoiceBox<>();
+        saturdayType = new ChoiceBox<>();
+
+        ObservableList<String> regOrPTO = FXCollections.observableArrayList("Regular", "PTO");
+        ChoiceBox<Integer>[] hoursBoxes = new ChoiceBox[]{sundayHours, mondayHours, tuesdayHours, wednesdayHours, thursdayHours, fridayHours, saturdayHours};
+        ChoiceBox<String>[] typeBoxes = new ChoiceBox[]{sundayType, mondayType, tuesdayType, wednesdayType, thursdayType, fridayType, saturdayType};
+
+        for (ChoiceBox<Integer> cb : hoursBoxes) {
+            for (int i = 0; i <= 24; i++) cb.getItems().add(i);
+            cb.setValue(0); // default
+        }
+        for (ChoiceBox<String> cb : typeBoxes) {
+            cb.setItems(regOrPTO);
+            cb.setValue("Regular");
+        }
+
+        // Create day labels and HBoxes
+        HBox sundayBox = new HBox(20, new Label("Sunday: "), sundayType, sundayHours);
+        HBox mondayBox = new HBox(20, new Label("Monday: "), mondayType, mondayHours);
+        HBox tuesdayBox = new HBox(20, new Label("Tuesday: "), tuesdayType, tuesdayHours);
+        HBox wednesdayBox = new HBox(20, new Label("Wednesday: "), wednesdayType, wednesdayHours);
+        HBox thursdayBox = new HBox(20, new Label("Thursday: "), thursdayType, thursdayHours);
+        HBox fridayBox = new HBox(20, new Label("Friday: "), fridayType, fridayHours);
+        HBox saturdayBox = new HBox(20, new Label("Saturday: "), saturdayType, saturdayHours);
+        HBox weekBox = new HBox(20, prevWeek, nextWeek);
 
         // add color to odd day hbox
         sundayBox.getStyleClass().add("oddDay-hbox");
@@ -119,207 +151,112 @@ public class Time {
         wednesdayBox.getStyleClass().add("evenDay-hbox");
         fridayBox.getStyleClass().add("evenDay-hbox");
 
-        // TODO: Replace this with actual logged-in user from App once ready
-        Employee currentUser = new Employee();
-        currentUser.firstName = "Test";
-        currentUser.lastName = "User";
-        currentUser.payType = "Hourly";   // or "Salary"
+        VBox daysBox = new VBox(10, sundayBox, mondayBox, tuesdayBox, wednesdayBox, thursdayBox, fridayBox, saturdayBox);
 
-        // create save button
-        Button saveBTN = new Button("Save");
-        // Add event handler
-        saveBTN.setOnAction(event -> {
-            saveWeek(
-                currentUser,
-                sundayChoiceBox, mondayChoiceBox, tuesdayChoiceBox, wednesdayChoiceBox,
-                thursdayChoiceBox, fridayChoiceBox, saturdayChoiceBox,
-                sundayPayTypeChoiceBox, mondayPayTypeChoiceBox, tuesdayPayTypeChoiceBox,
-                wednesdayPayTypeChoiceBox, thursdayPayTypeChoiceBox, fridayPayTypeChoiceBox,
-                saturdayPayTypeChoiceBox
-            );
-        });
+        // Save button
+        saveButton = new Button("Save");
+        saveButton.setOnAction(e -> saveWeek());
 
-        // create vbox for the days and add hboxes
-        VBox daysBox = new VBox(20, sundayBox, mondayBox, tuesdayBox, wednesdayBox, thursdayBox, fridayBox, saturdayBox);
+        paneTime.getChildren().addAll(title, employeeLabel, weekLabel, weekBox, nextWeek, daysBox, saveButton);
 
-        boolean isAdmin = false; // placeholder
-
-
-        // Get if user is admin 
-         if (isAdmin) {
-            employeeLabel.setText("Search for an employee to view time card");
-        } else {
-            employeeLabel.setText(currentUser.firstName + " " + currentUser.lastName);
-
-            // Apply defaults based on salary/hourly
-            defaultsByEmployeeType(
-                currentUser,
-                sundayChoiceBox, mondayChoiceBox, tuesdayChoiceBox,
-                wednesdayChoiceBox, thursdayChoiceBox, fridayChoiceBox, saturdayChoiceBox
-            );
-
-            loadSavedTime(
-                currentUser,
-                sundayChoiceBox, mondayChoiceBox, tuesdayChoiceBox,
-                wednesdayChoiceBox, thursdayChoiceBox, fridayChoiceBox, saturdayChoiceBox,
-                sundayPayTypeChoiceBox, mondayPayTypeChoiceBox, tuesdayPayTypeChoiceBox,
-                wednesdayPayTypeChoiceBox, thursdayPayTypeChoiceBox, fridayPayTypeChoiceBox,
-                saturdayPayTypeChoiceBox
-            );
-
-        }
-
-        // if timecard not locked
-        if (true) { // change to check if timecard locked (should be false not true, leaving true for testing)
-            // add employee label, day box, save button to time pane
-            paneTime.getChildren().addAll(employeeLabel, daysBox, saveBTN);
-        }
     }
 
-    private void salary(ChoiceBox<Integer> monday, ChoiceBox<Integer> tuesday, ChoiceBox<Integer> wednesday, ChoiceBox<Integer> thursday, ChoiceBox<Integer> friday) {
-        monday.setValue(8);
-        tuesday.setValue(8);
-        wednesday.setValue(8);
-        thursday.setValue(8);
-        friday.setValue(8);
-    } 
-    
-    private void hourly(ChoiceBox<Integer> sunday, ChoiceBox<Integer> monday, ChoiceBox<Integer> tuesday, ChoiceBox<Integer> wednesday, ChoiceBox<Integer> thursday, ChoiceBox<Integer> friday, ChoiceBox<Integer> saturday) {
-        sunday.setValue(0);
-        monday.setValue(0);
-        tuesday.setValue(0);
-        wednesday.setValue(0);
-        thursday.setValue(0);
-        friday.setValue(0);
-        saturday.setValue(0);
-    }
+    private void saveWeek() {
+        double totalHours = 0;
+        double totalPTO = 0;
 
-    private void defaultsByEmployeeType(Employee employee, ChoiceBox<Integer> sunday, ChoiceBox<Integer> monday, ChoiceBox<Integer> tuesday, ChoiceBox<Integer> wednesday, ChoiceBox<Integer> thursday, ChoiceBox<Integer> friday, ChoiceBox<Integer> saturday) {
-        //if salary 
-        // check database to see if spelling needs corrected
-        if("Salary".equals(employee.payType)) {
-            // default to regular pay 8 hours Mon - Fri
-            salary(monday, tuesday, wednesday, thursday, friday);
+        ChoiceBox<Integer>[] hoursBoxes = new ChoiceBox[]{sundayHours, mondayHours, tuesdayHours, wednesdayHours, thursdayHours, fridayHours, saturdayHours};
+        ChoiceBox<String>[] typeBoxes = new ChoiceBox[]{sundayType, mondayType, tuesdayType, wednesdayType, thursdayType, fridayType, saturdayType};
+
+        for (int i = 0; i < 7; i++) {
+            int hours = hoursBoxes[i].getValue();
+            if ("PTO".equals(typeBoxes[i].getValue())) totalPTO += hours;
+            else totalHours += hours;
         }
-        // else employee is hourly, set all days to 0 hours worked
-        else {
-            hourly(sunday, monday, tuesday, wednesday, thursday, friday, saturday);
-        }
-    }
 
-    private void saveWeek(
-        Employee e,
-        ChoiceBox<Integer> sun, ChoiceBox<Integer> mon, ChoiceBox<Integer> tue,
-        ChoiceBox<Integer> wed, ChoiceBox<Integer> thu, ChoiceBox<Integer> fri,
-        ChoiceBox<Integer> sat,
-        ChoiceBox<String> sunType, ChoiceBox<String> monType, ChoiceBox<String> tueType,
-        ChoiceBox<String> wedType, ChoiceBox<String> thuType, ChoiceBox<String> friType,
-        ChoiceBox<String> satType
-    ) {
-        String[] week = getWeekRange();
-        LocalDate start = LocalDate.parse(week[0]);
-
-        saveDay(e, start.plusDays(0), sun, sunType);
-        saveDay(e, start.plusDays(1), mon, monType);
-        saveDay(e, start.plusDays(2), tue, tueType);
-        saveDay(e, start.plusDays(3), wed, wedType);
-        saveDay(e, start.plusDays(4), thu, thuType);
-        saveDay(e, start.plusDays(5), fri, friType);
-        saveDay(e, start.plusDays(6), sat, satType);
-
-        System.out.println("Time entries saved!");
-    }
-
-    private void saveDay(Employee e, LocalDate date, ChoiceBox<Integer> hours, ChoiceBox<String> type) {
         TimeEntry t = new TimeEntry();
-        t.employeeId = e.employeeId;
-        t.date = date.toString();
-
-        if(type.getValue().equals("PTO")) {
-            t.hoursWorked = 0;
-            t.ptoHours = hours.getValue();
-        } else {
-            t.hoursWorked = hours.getValue();
-            t.ptoHours = 0;
-        }
-
+        t.employeeId = employeeId;
+        t.date = weekStart;
+        t.hoursWorked = totalHours;
+        t.ptoHours = totalPTO;
         t.isLocked = false;
 
-        TimeEntryController.add(t);
+        List<TimeEntry> existing = TimeEntryDAO.getWeek(employeeId, weekStart, weekStart);
+        if (existing.isEmpty()) TimeEntryDAO.insert(t);
+        else {
+            t.entryId = existing.get(0).entryId;
+            TimeEntryDAO.update(t);
+        }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText("Saved");
+        alert.setContentText("Weekly hours have been saved.");
+        alert.showAndWait();
+
+        
     }
 
-    private void loadSavedTime(
-        Employee employee,
-        ChoiceBox<Integer> sunday,
-        ChoiceBox<Integer> monday,
-        ChoiceBox<Integer> tuesday,
-        ChoiceBox<Integer> wednesday,
-        ChoiceBox<Integer> thursday,
-        ChoiceBox<Integer> friday,
-        ChoiceBox<Integer> saturday,
-        ChoiceBox<String> sundayType,
-        ChoiceBox<String> mondayType,
-        ChoiceBox<String> tuesdayType,
-        ChoiceBox<String> wednesdayType,
-        ChoiceBox<String> thursdayType,
-        ChoiceBox<String> fridayType,
-        ChoiceBox<String> saturdayType
-    ) {
-        String[] week = getWeekRange();
-        List<TimeEntry> entries = TimeEntryController.getWeek(
-            employee.employeeId,
-            week[0],
-            week[1]
-        );
+    private void loadSavedWeek() {
+        String weekStartStr = currentWeekStart.toString();
 
-        for (TimeEntry t : entries) {
-            LocalDate date = LocalDate.parse(t.date);
-            DayOfWeek day = date.getDayOfWeek();
+        
+        List<TimeEntry> list = TimeEntryDAO.getWeek(employeeId, weekStartStr, weekStartStr);
+        boolean locked = TimeEntryDAO.areEntriesLocked(employeeId, this.weekStart);
 
-            switch (day) {
-                case SUNDAY -> {
-                    sunday.setValue((int)t.hoursWorked);
-                    sundayType.setValue(t.ptoHours > 0 ? "PTO" : "Regular");
-                }
-                case MONDAY -> {
-                monday.setValue((int)t.hoursWorked);
-                mondayType.setValue(t.ptoHours > 0 ? "PTO" : "Regular");
-                }
-                case TUESDAY -> {
-                    tuesday.setValue((int)t.hoursWorked);
-                    tuesdayType.setValue(t.ptoHours > 0 ? "PTO" : "Regular");
-                }
-                case WEDNESDAY -> {
-                    wednesday.setValue((int)t.hoursWorked);
-                    wednesdayType.setValue(t.ptoHours > 0 ? "PTO" : "Regular");
-                }
-                case THURSDAY -> {
-                    thursday.setValue((int)t.hoursWorked);
-                    thursdayType.setValue(t.ptoHours > 0 ? "PTO" : "Regular");
-                }
-                case FRIDAY -> {
-                    friday.setValue((int)t.hoursWorked);
-                    fridayType.setValue(t.ptoHours > 0 ? "PTO" : "Regular");
-                }
-                case SATURDAY -> {
-                    saturday.setValue((int)t.hoursWorked);
-                    saturdayType.setValue(t.ptoHours > 0 ? "PTO" : "Regular");
+        saveButton.setDisable(locked);
+
+        ChoiceBox<Integer>[] hoursBoxes = new ChoiceBox[]{
+            sundayHours, mondayHours, tuesdayHours, wednesdayHours, thursdayHours, fridayHours, saturdayHours
+        };
+        ChoiceBox<String>[] typeBoxes = new ChoiceBox[]{
+            sundayType, mondayType, tuesdayType, wednesdayType, thursdayType, fridayType, saturdayType
+        };
+
+        for (ChoiceBox<Integer> cb : hoursBoxes) cb.setDisable(locked);
+        for (ChoiceBox<String> cb : typeBoxes) cb.setDisable(locked);
+        lockedLabel.setText(locked ? "THIS WEEK IS LOCKED." : "");
+
+        if (!list.isEmpty()) {
+            TimeEntry t = list.get(0);
+            double totalHours = t.hoursWorked;
+            double totalPTO = t.ptoHours;
+
+            // If you don't store per-day hours, just set totals in first 5 weekdays
+            for (int i = 0; i < 7; i++) {
+                if ("PTO".equals(typeBoxes[i].getValue())) {
+                    hoursBoxes[i].setValue((int) totalPTO); // or divide evenly
+                    typeBoxes[i].setValue("PTO");
+                } else {
+                    hoursBoxes[i].setValue((int) totalHours); // or divide evenly
+                    typeBoxes[i].setValue("Regular");
                 }
             }
+        } else {
+            // Default values
+            for (ChoiceBox<Integer> cb : hoursBoxes) cb.setValue(0);
+            for (ChoiceBox<String> cb : typeBoxes) cb.setValue("Regular");
         }
     }
 
-    private String[] getWeekRange() {
-        LocalDate today = LocalDate.now();
 
-        LocalDate sunday = today.with(DayOfWeek.SUNDAY);
-        LocalDate saturday = today.with(DayOfWeek.SATURDAY);
-
-        return new String[] {
-            sunday.toString(),
-            saturday.toString()
-        };
+    private void previousWeek() {
+        LocalDate start = LocalDate.parse(weekStart).minusWeeks(1);
+        weekStart = start.toString();
+        loadSavedWeek();
+        updateWeekLabel();
     }
 
-    
-}
+    private void nextWeek() {
+        LocalDate start = LocalDate.parse(weekStart).plusWeeks(1);
+        weekStart = start.toString();
+        loadSavedWeek();
+        updateWeekLabel();
+    }
+
+    private void updateWeekLabel() {
+        LocalDate end = currentWeekStart.plusDays(6);
+        weekLabel.setText("Week of " + currentWeekStart + " to " + end);
+    }
+
+
+} 
