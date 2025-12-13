@@ -22,8 +22,10 @@ import java.util.List;
 public class Time {
     private VBox paneTime;
 
+    private Label weekLabel;
+    private Button nextWeekButton;
+    private Button prevWeekButton;
     private int employeeId;
-    private String weekStart;
 
     // ChoiceBoxes for each day
     private ChoiceBox<Integer> sundayHours;
@@ -52,7 +54,10 @@ public class Time {
         // set size to max width of child
         paneTime.setFillWidth(false);
 
+        currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
+
         buildUI();
+
     }
 
     public VBox getTimePane() {
@@ -60,6 +65,7 @@ public class Time {
     }
 
     private LocalDate currentWeekStart;
+    
 
     private void buildUI() {
         Employee user = SessionController.getCurrentUser();
@@ -73,16 +79,13 @@ public class Time {
 
         currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
 
-        LocalDate start = LocalDate.parse(weekStart);
-        LocalDate weekEnd = start.plusDays(6);
-
         Label title = new Label("Weekly Time Card");
         title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
         Label employeeLabel = new Label(user.firstName + " " + user.lastName);
-        Label weekLabel;
+        weekLabel = new Label();
 
-        Button prevWeekButton = new Button("< Previous Week");
-        Button nextWeekButton = new Button("Next Week >");
+        prevWeekButton = new Button("< Previous Week");
+        nextWeekButton = new Button("Next Week >");
 
         nextWeekButton.setOnAction(e -> {
             currentWeekStart = currentWeekStart.plusWeeks(1);
@@ -138,7 +141,10 @@ public class Time {
         HBox thursdayBox = new HBox(20, new Label("Thursday: "), thursdayType, thursdayHours);
         HBox fridayBox = new HBox(20, new Label("Friday: "), fridayType, fridayHours);
         HBox saturdayBox = new HBox(20, new Label("Saturday: "), saturdayType, saturdayHours);
-        HBox weekBox = new HBox(20, prevWeek, nextWeek);
+
+        // WEEK HEADER ROW
+        HBox weekHeader = new HBox(15, prevWeekButton, weekLabel, nextWeekButton);
+        weekHeader.setAlignment(Pos.CENTER);
 
         // add color to odd day hbox
         sundayBox.getStyleClass().add("oddDay-hbox");
@@ -157,7 +163,7 @@ public class Time {
         saveButton = new Button("Save");
         saveButton.setOnAction(e -> saveWeek());
 
-        paneTime.getChildren().addAll(title, employeeLabel, weekLabel, weekBox, nextWeek, daysBox, saveButton);
+        paneTime.getChildren().addAll(title, employeeLabel, weekHeader, daysBox, saveButton);
 
     }
 
@@ -176,12 +182,15 @@ public class Time {
 
         TimeEntry t = new TimeEntry();
         t.employeeId = employeeId;
-        t.date = weekStart;
+
+        String weekStartStr = currentWeekStart.toString();
+        t.date = weekStartStr;
+
         t.hoursWorked = totalHours;
         t.ptoHours = totalPTO;
         t.isLocked = false;
 
-        List<TimeEntry> existing = TimeEntryDAO.getWeek(employeeId, weekStart, weekStart);
+        List<TimeEntry> existing = TimeEntryDAO.getWeek(employeeId, weekStartStr, weekStartStr);
         if (existing.isEmpty()) TimeEntryDAO.insert(t);
         else {
             t.entryId = existing.get(0).entryId;
@@ -193,6 +202,10 @@ public class Time {
         alert.setContentText("Weekly hours have been saved.");
         alert.showAndWait();
 
+        // go back to main screen
+        EmployeeView dashboard = new EmployeeView();
+        App.mainPane.setCenter(dashboard.getEmployeeViewPane());
+
         
     }
 
@@ -201,7 +214,7 @@ public class Time {
 
         
         List<TimeEntry> list = TimeEntryDAO.getWeek(employeeId, weekStartStr, weekStartStr);
-        boolean locked = TimeEntryDAO.areEntriesLocked(employeeId, this.weekStart);
+        boolean locked = TimeEntryDAO.areEntriesLocked(employeeId, currentWeekStart.toString());
 
         saveButton.setDisable(locked);
 
@@ -236,21 +249,6 @@ public class Time {
             for (ChoiceBox<Integer> cb : hoursBoxes) cb.setValue(0);
             for (ChoiceBox<String> cb : typeBoxes) cb.setValue("Regular");
         }
-    }
-
-
-    private void previousWeek() {
-        LocalDate start = LocalDate.parse(weekStart).minusWeeks(1);
-        weekStart = start.toString();
-        loadSavedWeek();
-        updateWeekLabel();
-    }
-
-    private void nextWeek() {
-        LocalDate start = LocalDate.parse(weekStart).plusWeeks(1);
-        weekStart = start.toString();
-        loadSavedWeek();
-        updateWeekLabel();
     }
 
     private void updateWeekLabel() {
