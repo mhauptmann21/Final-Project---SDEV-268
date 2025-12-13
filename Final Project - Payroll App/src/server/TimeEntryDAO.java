@@ -1,7 +1,6 @@
 package server;
 
 import java.sql.*;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +8,13 @@ import java.util.List;
 public class TimeEntryDAO {
 
     // Convert a date string (yyyy-mm-dd) into the Monday of that week
-    private static LocalDate getWeekStart(String date) {
-        return LocalDate.parse(date).with(DayOfWeek.MONDAY);
+    public static LocalDate getWeekStart(String dateStr) {
+        if (dateStr == null || dateStr.isBlank()) {
+            throw new IllegalArgumentException("dateStr cannot be null");
+        }
+        return LocalDate.parse(dateStr);
     }
+
 
     // Insert new time entry
     public static void insert(TimeEntry t) {

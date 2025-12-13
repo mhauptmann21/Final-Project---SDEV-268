@@ -11,6 +11,8 @@ public class Login {
     // Create text input fields
     private TextField usernameField = new TextField();
     private PasswordField passwordField = new PasswordField();
+
+    private ChoiceBox<String> choiceBox = new ChoiceBox<>();
     
     public Login() {
         login();
@@ -36,6 +38,10 @@ public class Login {
         usernameField.setMaxWidth(300);
         passwordField.setMaxWidth(300);
 
+        // Add admin and employee types to choice box
+        choiceBox.getItems().addAll("Employee", "Admin");
+        // Set defualt to employee
+        choiceBox.setValue("Employee");
 
         // Create login button
         Button loginButton = new Button("Login");
@@ -43,7 +49,8 @@ public class Login {
         loginButton.setOnAction(e -> 
             LoginController.handleLogin(
                 usernameField.getText(), 
-                passwordField.getText()
+                passwordField.getText(),
+                choiceBox.getValue()
             )
         );
 
@@ -67,6 +74,7 @@ public class Login {
             loginLabel, 
             usernameLabel, usernameField, 
             passwordLabel, passwordField,
+            choiceBox,
             buttonBox);
     }
     // private void handleLogin() {
