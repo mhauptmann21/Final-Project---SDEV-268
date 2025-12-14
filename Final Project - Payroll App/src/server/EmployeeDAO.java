@@ -1,48 +1,57 @@
 package server;
 
-import java.sql.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+
 import java.time.LocalDate;
+
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
 
 import security.SecurityModule;
 
 public class EmployeeDAO {
 
-    // INSERT EMPLOYEE
-    public static void insertEmployee(Employee e) {
-        String sql = """
-            INSERT INTO employees (
-                first_name, last_name, status, pay_type, base_salary, medical,
-                dependents, date_of_birth, date_hired, email, username,
-                department, job_title, password
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """;
-
-        try (Connection conn = Database.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, e.firstName);
-            stmt.setString(2, e.lastName);
-            stmt.setString(3, e.status);
-            stmt.setString(4, e.payType);
-            stmt.setDouble(5, e.baseSalary);
-            stmt.setString(6, e.medical);
-            stmt.setInt(7, e.dependents);
-            stmt.setString(8, e.dateOfBirth);
-            stmt.setString(9, e.dateHired);
-            stmt.setString(10, e.email);
-            stmt.setString(11, e.username);
-            stmt.setString(12, e.department);
-            stmt.setString(13, e.jobTitle);
-            stmt.setString(14, SecurityModule.md5Hash(e.password));
-            
-            stmt.executeUpdate();
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+    private static MongoCollection<Document> getCollection() {
+        MongoDatabase db = Database.getDatabase();
+        return db.getCollection("employees");
     }
 
-    // Adding a new employee from registering
+    // INSERT EMPLOYEE
+    public static void insertEmployee(Employee e) {
+
+        Document doc = new Document()
+                .append("first_name", e.firstName)
+                .append("last_name", e.lastName)
+                .append("status", e.status)
+                .append("pay_type", e.payType)
+                .append("base_salary", e.baseSalary)
+                .append("medical", e.medical)
+                .append("dependents", e.dependents)
+                .append("date_of_birth", e.dateOfBirth)
+                .append("date_hired", e.dateHired)
+                .append("email", e.email)
+                .append("username", e.username)
+                .append("department", e.department)
+                .append("job_title", e.jobTitle)
+                .append("password", SecurityModule.md5Hash(e.password));
+
+        getCollection().insertOne(doc);
+
+        // Save generated MongoDB ID back to object
+        e.mongoId = doc.getObjectId("_id");
+    }
+
+    // REGISTER NEW EMPLOYEE
+    private static MongoCollection<Document> collection() {
+        MongoDatabase db = Database.getDatabase();
+        return db.getCollection("employees");
+    }
+
     public static boolean insertNewEmployee(
             String firstName,
             String lastName,
@@ -50,146 +59,113 @@ public class EmployeeDAO {
             String username,
             String password
     ) {
-        Employee e = new Employee();
-
-        e.firstName = firstName;
-        e.lastName = lastName;
-        e.email = email;
-        e.username = username;
-        e.password = password;
-
-        // REQUIRED defaults so INSERT works
-        e.status = "ACTIVE";
-        e.payType = "SALARY";          // or HOURLY
-        e.baseSalary = 0.00;           // default
-        e.medical = "SINGLE";          // enum
-        e.dependents = 0;
-        e.dateOfBirth = "2000-01-01";  // TEMP default
-        e.dateHired = LocalDate.now().toString();
-        e.department = "NONE";
-        e.jobTitle = "New Hire";
-
         try {
-            insertEmployee(e);
+            // Check if username already exists
+            Document existing = collection()
+                    .find(eq("username", username))
+                    .first();
+
+            if (existing != null) {
+                return false; // username already taken
+            }
+
+            Document employee = new Document()
+                    .append("first_name", firstName)
+                    .append("last_name", lastName)
+                    .append("email", email)
+                    .append("username", username)
+                    .append("password", SecurityModule.md5Hash(password))
+                    .append("status", "ACTIVE")
+                    .append("pay_type", "SALARY")
+                    .append("base_salary", 0.0)
+                    .append("medical", "SINGLE")
+                    .append("dependents", 0)
+                    .append("date_of_birth", "2000-01-01")
+                    .append("date_hired", java.time.LocalDate.now().toString())
+                    .append("department", "NONE")
+                    .append("job_title", "New Hire");
+
+            collection().insertOne(employee);
             return true;
-        } catch (Exception ex) {
-            ex.printStackTrace();
+
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
 
-
     // UPDATE EMPLOYEE
     public static void updateEmployee(Employee e) {
-        String sql = """
-            UPDATE employees
-            SET first_name=?, last_name=?, status=?, pay_type=?, base_salary=?,
-                medical=?, dependents=?, date_of_birth=?, date_hired=?, email=?,
-                department=?, job_title=?, hashedPassword=?
-            WHERE employee_id=?
-            """;
 
-        try (Connection conn = Database.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        if (e.mongoId == null) return;
 
-            stmt.setString(1, e.firstName);
-            stmt.setString(2, e.lastName);
-            stmt.setString(3, e.status);
-            stmt.setString(4, e.payType);
-            stmt.setDouble(5, e.baseSalary);
-            stmt.setString(6, e.medical);
-            stmt.setInt(7, e.dependents);
-            stmt.setString(8, e.dateOfBirth);
-            stmt.setString(9, e.dateHired);
-            stmt.setString(10, e.email);
-            stmt.setString(11, e.department);
-            stmt.setString(12, e.jobTitle);
-            stmt.setInt(13, e.employeeId);
-
-            stmt.executeUpdate();
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+        UpdateResult result = getCollection().updateOne(
+                eq("_id", e.mongoId),
+                new Document("$set", new Document()
+                        .append("first_name", e.firstName)
+                        .append("last_name", e.lastName)
+                        .append("status", e.status)
+                        .append("pay_type", e.payType)
+                        .append("base_salary", e.baseSalary)
+                        .append("medical", e.medical)
+                        .append("dependents", e.dependents)
+                        .append("date_of_birth", e.dateOfBirth)
+                        .append("date_hired", e.dateHired)
+                        .append("email", e.email)
+                        .append("department", e.department)
+                        .append("job_title", e.jobTitle)
+                )
+        );
     }
 
     // DELETE EMPLOYEE
-    public static void deleteEmployee(int id) {
-        try (Connection conn = Database.connect();
-             PreparedStatement stmt = conn.prepareStatement("DELETE FROM employees WHERE employee_id=?")) {
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+    public static void deleteEmployee(ObjectId id) {
+        DeleteResult result = getCollection().deleteOne(eq("_id", id));
     }
 
     // GET BY ID
-    public static Employee getEmployeeById(int id) {
-        String sql = "SELECT * FROM employees WHERE employee_id=?";
+    public static Employee getEmployeeById(ObjectId id) {
 
-        try (Connection conn = Database.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Document doc = getCollection().find(eq("_id", id)).first();
 
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
+        if (doc == null) return null;
 
-            if (rs.next()) {
-                Employee e = new Employee();
-                e.employeeId = rs.getInt("employee_id");
-                e.firstName = rs.getString("first_name");
-                e.lastName = rs.getString("last_name");
-                e.status = rs.getString("status");
-                e.payType = rs.getString("pay_type");
-                e.baseSalary = rs.getDouble("base_salary");
-                e.medical = rs.getString("medical");
-                e.dependents = rs.getInt("dependents");
-                e.dateOfBirth = rs.getString("date_of_birth");
-                e.dateHired = rs.getString("date_hired");
-                e.email = rs.getString("email");
-                e.department = rs.getString("department");
-                e.jobTitle = rs.getString("job_title");
-
-                return e;
-            }
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-
-        return null;
+        return documentToEmployee(doc);
     }
 
     // GET BY NAME
     public static Employee getEmployeeByName(String first, String last) {
-    String sql = "SELECT * FROM employee WHERE first_name = ? AND last_name = ?";
-    
-    try (Connection conn = Database.connect();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        stmt.setString(1, first);
-        stmt.setString(2, last);
+        Document doc = getCollection().find(
+                new Document("first_name", first)
+                        .append("last_name", last)
+        ).first();
 
-        ResultSet rs = stmt.executeQuery();
+        if (doc == null) return null;
 
-        if (rs.next()) {
-            Employee emp = new Employee();
-            emp.employeeID = rs.getInt("employee_id");
-            emp.firstName = rs.getString("first_name");
-            emp.lastName = rs.getString("last_name");
-            emp.position = rs.getString("position");
-            emp.payType = rs.getString("pay_type");
-            emp.hourlyRate = rs.getDouble("hourly_rate");
-            emp.salary = rs.getDouble("salary");
-            emp.department = rs.getString("department");
-            emp.isAdmin = rs.getBoolean("is_admin");
-            return emp;
-        }
-
-    } catch (Exception e) {
-        e.printStackTrace();
+        return documentToEmployee(doc);
     }
-    return null;
-}
 
+    // Helper: Convert Mongo Document → Employee
+    private static Employee documentToEmployee(Document doc) {
+
+        Employee e = new Employee();
+
+        e.mongoId = doc.getObjectId("_id");
+        e.firstName = doc.getString("first_name");
+        e.lastName = doc.getString("last_name");
+        e.status = doc.getString("status");
+        e.payType = doc.getString("pay_type");
+        e.baseSalary = doc.getDouble("base_salary");
+        e.medical = doc.getString("medical");
+        e.dependents = doc.getInteger("dependents");
+        e.dateOfBirth = doc.getString("date_of_birth");
+        e.dateHired = doc.getString("date_hired");
+        e.email = doc.getString("email");
+        e.username = doc.getString("username");
+        e.department = doc.getString("department");
+        e.jobTitle = doc.getString("job_title");
+
+        return e;
+    }
 }

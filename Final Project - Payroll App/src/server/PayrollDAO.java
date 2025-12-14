@@ -1,11 +1,18 @@
 package server;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Sorts;
+import org.bson.Document;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class PayrollDAO {
+
+    private static MongoCollection<Document> collection() {
+        MongoDatabase db = Database.getDatabase();
+        return db.getCollection("payroll");
+    }
 
     public static void insertPayroll(
         int employeeId,
@@ -23,68 +30,65 @@ public class PayrollDAO {
         double medicareEmployer,
         double netPay
     ) {
-        String sql = "INSERT INTO payroll (employee_id, period_start, period_end, gross_pay, " + 
-                "medical_deduction, dependents_stipend, state_tax, federal_tax_emp, federal_tax_employer, " +
-                "social_sec_emp, social_sec_employer, medicare_emp, medicare_employer, net_pay) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        try (Connection conn = Database.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-             
-            stmt.setInt(1, employeeId);
-            stmt.setString(2, periodStart);
-            stmt.setString(3, periodEnd);
-            stmt.setDouble(4, grossPay);
-            stmt.setDouble(5, medicalDeduction);
-            stmt.setDouble(6, dependentsStipend);
-            stmt.setDouble(7, stateTax);
-            stmt.setDouble(8, federalEmp);
-            stmt.setDouble(9, federalEmployer);
-            stmt.setDouble(10, ssEmp);
-            stmt.setDouble(11, ssEmployer);
-            stmt.setDouble(12, medicareEmp);
-            stmt.setDouble(13, medicareEmployer);
-            stmt.setDouble(14, netPay);
+        try {
+            Document payroll = new Document()
+                    .append("employeeId", employeeId)
+                    .append("periodStart", periodStart)
+                    .append("periodEnd", periodEnd)
+                    .append("grossPay", grossPay)
+                    .append("medicalDeduction", medicalDeduction)
+                    .append("dependentsStipend", dependentsStipend)
+                    .append("stateTax", stateTax)
+                    .append("federalTaxEmp", federalEmp)
+                    .append("federalTaxEmployer", federalEmployer)
+                    .append("socialSecEmp", ssEmp)
+                    .append("socialSecEmployer", ssEmployer)
+                    .append("medicareEmp", medicareEmp)
+                    .append("medicareEmployer", medicareEmployer)
+                    .append("netPay", netPay)
+                    .append("createdAt", System.currentTimeMillis());
 
-            stmt.executeUpdate();
+            collection().insertOne(payroll);
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // inside server.PayrollDAO (add this method)
-    public static server.Payroll getLatestPayrollForEmployee(int employeeId) {
-        String sql = "SELECT * FROM payroll WHERE employee_id = ? ORDER BY payroll_id DESC LIMIT 1";
-        try (Connection conn = Database.connect();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+    // Get most recent payroll for employee
+    public static Payroll getLatestPayrollForEmployee(int employeeId) {
+        try {
+            Document doc = collection()
+                    .find(eq("employeeId", employeeId))
+                    .sort(Sorts.descending("createdAt"))
+                    .first();
 
-            stmt.setInt(1, employeeId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                server.Payroll p = new server.Payroll();
-                p.payrollId = rs.getInt("payroll_id");
-                p.employeeId = rs.getInt("employee_id");
-                p.periodStart = rs.getString("period_start");
-                p.periodEnd = rs.getString("period_end");
-                p.grossPay = rs.getDouble("gross_pay");
-                p.medicalDeduction = rs.getDouble("medical_deduction");
-                p.dependentsStipend = rs.getDouble("dependents_stipend");
-                p.stateTax = rs.getDouble("state_tax");
-                p.federalTaxEmp = rs.getDouble("federal_tax_emp");
-                p.federalTaxEmployer = rs.getDouble("federal_tax_employer");
-                p.socialSecEmp = rs.getDouble("social_sec_emp");
-                p.socialSecEmployer = rs.getDouble("social_sec_employer");
-                p.medicareEmp = rs.getDouble("medicare_emp");
-                p.medicareEmployer = rs.getDouble("medicare_employer");
-                p.netPay = rs.getDouble("net_pay");
-                return p;
+            if (doc == null) {
+                return null;
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
 
-    
+            Payroll p = new Payroll();
+            p.mongoId = doc.getObjectId("_id");
+            p.employeeId = doc.getInteger("employeeId");
+            p.periodStart = doc.getString("periodStart");
+            p.periodEnd = doc.getString("periodEnd");
+            p.grossPay = doc.getDouble("grossPay");
+            p.medicalDeduction = doc.getDouble("medicalDeduction");
+            p.dependentsStipend = doc.getDouble("dependentsStipend");
+            p.stateTax = doc.getDouble("stateTax");
+            p.federalTaxEmp = doc.getDouble("federalTaxEmp");
+            p.federalTaxEmployer = doc.getDouble("federalTaxEmployer");
+            p.socialSecEmp = doc.getDouble("socialSecEmp");
+            p.socialSecEmployer = doc.getDouble("socialSecEmployer");
+            p.medicareEmp = doc.getDouble("medicareEmp");
+            p.medicareEmployer = doc.getDouble("medicareEmployer");
+            p.netPay = doc.getDouble("netPay");
+
+            return p;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

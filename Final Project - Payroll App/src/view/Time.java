@@ -193,7 +193,7 @@ public class Time {
         List<TimeEntry> existing = TimeEntryDAO.getWeek(employeeId, weekStartStr, weekStartStr);
         if (existing.isEmpty()) TimeEntryDAO.insert(t);
         else {
-            t.entryId = existing.get(0).entryId;
+            t.employeeId = existing.get(0).employeeId;
             TimeEntryDAO.update(t);
         }
 

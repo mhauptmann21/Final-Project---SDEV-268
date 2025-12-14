@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import server.Database;
 
 public class App extends Application {
 
@@ -21,6 +22,8 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+        System.out.println(Database.getDatabase().getName());
 
         adminView = new AdminView(); // IMPORTANT!
 
@@ -44,6 +47,7 @@ public class App extends Application {
 
     public static void main(String[] args) {
         Application.launch(args);
+
     }
 }
 

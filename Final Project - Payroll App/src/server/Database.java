@@ -1,24 +1,25 @@
 package server;
 
-import java.sql.SQLException;
-import java.sql.Connection;
-import java.sql.DriverManager;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 
 public class Database {
-    private static final String URL = "jdbc:mysql://localhost:3306/payroll_system";
-    private static final String USER = "root";
-    private static final String PASS = "";
+
+    private static final String CONNECTION_STRING =
+        "mongodb+srv://payroll_admin:admin_password@payrolldb.qayzedi.mongodb.net/?appName=PayrollDB";
+
+    private static final String DATABASE_NAME = "payroll_system";
+
+    private static MongoClient client;
+    private static MongoDatabase database;
 
     static {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        client = MongoClients.create(CONNECTION_STRING);
+        database = client.getDatabase(DATABASE_NAME);
     }
 
-    public static Connection connect() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASS);
+    public static MongoDatabase getDatabase() {
+        return database;
     }
 }
-
