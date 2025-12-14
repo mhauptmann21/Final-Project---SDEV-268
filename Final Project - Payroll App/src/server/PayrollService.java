@@ -57,7 +57,7 @@ public class PayrollService {
         );
 
         // Lock Time Entries
-        TimeEntryDAO.lockTimeEntries(employeeId);
+        TimeEntryDAO.lockWeek(employeeId, periodStart, periodEnd);
 
     }
     

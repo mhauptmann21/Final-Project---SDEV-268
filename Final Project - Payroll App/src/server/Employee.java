@@ -1,6 +1,9 @@
 package server;
 
+import org.bson.types.ObjectId;
+
 public class Employee {
+    public ObjectId mongoId;
     public int employeeId;
     public String firstName;
     public String lastName;

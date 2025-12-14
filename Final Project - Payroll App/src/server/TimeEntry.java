@@ -1,7 +1,9 @@
 package server;
 
+import org.bson.types.ObjectId;
+
 public class TimeEntry {
-    public int entryId;
+    public ObjectId mongoId;
     public int employeeId;
     public String date;
     public double hoursWorked;

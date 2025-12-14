@@ -1,7 +1,9 @@
 package server;
 
+import org.bson.types.ObjectId;
+
 public class Payroll {
-    public int payrollId;
+    public ObjectId mongoId;
     public int employeeId;
     public String periodStart;
     public String periodEnd;
