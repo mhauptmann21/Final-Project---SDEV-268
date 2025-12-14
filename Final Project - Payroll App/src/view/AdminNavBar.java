@@ -58,7 +58,7 @@ public class AdminNavBar {
         });
         // add info button event handler
         infoBTN.setOnAction(event -> {
-            // TODO: implement application information view 
+            App.adminView.getVboxCenter().getChildren().setAll(App.adminView.getInfoPage().getInfoPane());
         });
 
         // Add to vbox

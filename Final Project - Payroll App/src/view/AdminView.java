@@ -15,6 +15,7 @@ public class AdminView {
     private Search search = new Search();
     private AdminHome adminHome;
     private AdminNavBar adminNavBar = new AdminNavBar();
+    private Info info = new Info();
     private Employee currentEmployee = null;
 
     public AdminView() {
@@ -51,6 +52,10 @@ public class AdminView {
 
     public AdminHome getAdminHomePage() {
         return this.adminHome;
+    }
+
+    public Info getInfoPage() {
+        return this.info;
     }
 
     public void setCurrentEmployee(Employee emp) {
