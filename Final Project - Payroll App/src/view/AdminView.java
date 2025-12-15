@@ -16,6 +16,8 @@ public class AdminView {
     private AdminHome adminHome;
     private AdminNavBar adminNavBar = new AdminNavBar();
     private Info info = new Info();
+    private Report report = new Report();
+    private Payroll payroll = new Payroll();
     private Employee currentEmployee = null;
 
     public AdminView() {
@@ -56,6 +58,14 @@ public class AdminView {
 
     public Info getInfoPage() {
         return this.info;
+    }
+
+    public Report getReportPage() {
+        return this.report;
+    }
+
+    public Payroll getPayrollPage() {
+        return this.payroll;
     }
 
     public void setCurrentEmployee(Employee emp) {

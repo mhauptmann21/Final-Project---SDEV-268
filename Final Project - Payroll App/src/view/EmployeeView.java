@@ -6,6 +6,9 @@ import javafx.scene.layout.VBox;
 
 public class EmployeeView {
     private BorderPane paneEmployeeView = new BorderPane();
+    // instantiate pages
+    private Time time = new Time();
+    private Paycheck paycheck = new Paycheck();
 
     public EmployeeView() {
         employeeView();
@@ -15,10 +18,16 @@ public class EmployeeView {
         return this.paneEmployeeView;
     }
 
+    public Time getTime() {
+        return this.time;
+    }
+
+    public Paycheck getPaycheck() {
+        return this.paycheck;
+    }
+
     /* Create admin view method */
     private void employeeView() {
-        // instantiate pages
-        Time time = new Time();
         EmployeeNavBar employeeNavBar = new EmployeeNavBar();
         // add paycheck calculator page
 

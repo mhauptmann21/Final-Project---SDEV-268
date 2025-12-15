@@ -106,9 +106,8 @@ public class Search {
         String firstInput = firstTextField.getText().trim();
         String lastInput = lastTextField.getText().trim();
 
-        this.foundEmployee = server.EmployeeDAO.getEmployeeByName(firstInput, lastInput);
-
-        this.foundEmployee = null; // TODO: replace with actual search result
+        // replace with search result
+        this.foundEmployee = controllers.EmployeeController.getByName(firstInput, lastInput);
         
         // show messages
         if (isEmployeeFound()) {

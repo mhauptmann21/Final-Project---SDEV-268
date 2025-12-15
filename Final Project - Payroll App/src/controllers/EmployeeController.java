@@ -20,4 +20,8 @@ public class EmployeeController {
     public static Employee get(int id) {
         return EmployeeDAO.getEmployeeById(id);
     }
+
+    public static Employee getByName(String first, String Last) {
+        return EmployeeDAO.getEmployeeByName(first, Last);
+    }
 }
