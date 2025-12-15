@@ -47,14 +47,14 @@ public class AdminNavBar {
         });
         // add payroll button event handler
         payrollBTN.setOnAction(event -> {
-            // TODO: implement payroll view
+            App.adminView.getVboxCenter().getChildren().setAll(App.adminView.getPayrollPage().getPayrollPane());
         });
         timeBTN.setOnAction(event -> {
             App.adminView.getVboxCenter().getChildren().setAll(App.adminView.getTimePage().getTimePane());
         });
         // add reports button event handler
         reportsBTN.setOnAction(event -> { 
-            // TODO: implement reports view  
+            App.adminView.getVboxCenter().getChildren().setAll(App.adminView.getReportPage().getReportPane());  
         });
         // add info button event handler
         infoBTN.setOnAction(event -> {
