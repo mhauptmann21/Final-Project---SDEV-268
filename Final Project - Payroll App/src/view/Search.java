@@ -97,7 +97,9 @@ public class Search {
         // clear previous results
         clearFoundEmployee();
 
-        if (isSearchFieldsEmpty()) {
+        // validate input
+        if (firstTextField.getText().trim().isEmpty() ||
+            lastTextField.getText().trim().isEmpty()) {
             displayEmptyFieldsMessage();
             return;
         }
@@ -106,20 +108,19 @@ public class Search {
         String firstInput = firstTextField.getText().trim();
         String lastInput = lastTextField.getText().trim();
 
-        this.foundEmployee = server.EmployeeDAO.getEmployeeByName(firstInput, lastInput);
-
-        this.foundEmployee = null; // TODO: replace with actual search result
+        this.foundEmployee =
+                server.EmployeeDAO.getEmployeeByName(firstInput, lastInput);
         
         // show messages
         if (isEmployeeFound()) {
             displayEmployeeFoundMessage();
+
+            // set current employee in AdminView ONLY if found
+            App.adminView.setCurrentEmployee(this.foundEmployee);
          
         } else {
             displayEmployeeNotFoundMessage();
         }
-
-        // set current employee in AdminView
-        App.adminView.setCurrentEmployee(this.foundEmployee);
 
         // clear fields after search
         clearSearchFields();

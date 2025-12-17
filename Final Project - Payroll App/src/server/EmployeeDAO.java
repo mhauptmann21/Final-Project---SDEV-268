@@ -7,21 +7,21 @@ import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import java.time.LocalDate;
-
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.set;
 
 import security.SecurityModule;
 
 public class EmployeeDAO {
+
+    /* COLLECTION ACCESS */
 
     private static MongoCollection<Document> getCollection() {
         MongoDatabase db = Database.getDatabase();
         return db.getCollection("employees");
     }
 
-    // INSERT EMPLOYEE
+    /* INSERT EMPLOYEE (FULL) */
+
     public static void insertEmployee(Employee e) {
 
         Document doc = new Document()
@@ -41,16 +41,10 @@ public class EmployeeDAO {
                 .append("password", SecurityModule.md5Hash(e.password));
 
         getCollection().insertOne(doc);
-
-        // Save generated MongoDB ID back to object
         e.mongoId = doc.getObjectId("_id");
     }
 
-    // REGISTER NEW EMPLOYEE
-    private static MongoCollection<Document> collection() {
-        MongoDatabase db = Database.getDatabase();
-        return db.getCollection("employees");
-    }
+    /* REGISTER NEW EMPLOYEE */
 
     public static boolean insertNewEmployee(
             String firstName,
@@ -60,14 +54,11 @@ public class EmployeeDAO {
             String password
     ) {
         try {
-            // Check if username already exists
-            Document existing = collection()
+            Document existing = getCollection()
                     .find(eq("username", username))
                     .first();
 
-            if (existing != null) {
-                return false; // username already taken
-            }
+            if (existing != null) return false;
 
             Document employee = new Document()
                     .append("first_name", firstName)
@@ -85,7 +76,7 @@ public class EmployeeDAO {
                     .append("department", "NONE")
                     .append("job_title", "New Hire");
 
-            collection().insertOne(employee);
+            getCollection().insertOne(employee);
             return true;
 
         } catch (Exception e) {
@@ -94,9 +85,9 @@ public class EmployeeDAO {
         }
     }
 
-    // UPDATE EMPLOYEE
-    public static void updateEmployee(Employee e) {
+    /* UPDATE EMPLOYEE */
 
+    public static void updateEmployee(Employee e) {
         if (e.mongoId == null) return;
 
         UpdateResult result = getCollection().updateOne(
@@ -118,35 +109,30 @@ public class EmployeeDAO {
         );
     }
 
-    // DELETE EMPLOYEE
+    /*  DELETE EMPLOYEE  */
+
     public static void deleteEmployee(ObjectId id) {
         DeleteResult result = getCollection().deleteOne(eq("_id", id));
     }
 
-    // GET BY ID
+    /* GET EMPLOYEE */
+
     public static Employee getEmployeeById(ObjectId id) {
-
         Document doc = getCollection().find(eq("_id", id)).first();
-
-        if (doc == null) return null;
-
-        return documentToEmployee(doc);
+        return (doc == null) ? null : documentToEmployee(doc);
     }
 
-    // GET BY NAME
     public static Employee getEmployeeByName(String first, String last) {
-
         Document doc = getCollection().find(
                 new Document("first_name", first)
                         .append("last_name", last)
         ).first();
 
-        if (doc == null) return null;
-
-        return documentToEmployee(doc);
+        return (doc == null) ? null : documentToEmployee(doc);
     }
 
-    // Helper: Convert Mongo Document → Employee
+    
+
     private static Employee documentToEmployee(Document doc) {
 
         Employee e = new Employee();
@@ -156,9 +142,12 @@ public class EmployeeDAO {
         e.lastName = doc.getString("last_name");
         e.status = doc.getString("status");
         e.payType = doc.getString("pay_type");
-        e.baseSalary = doc.getDouble("base_salary");
+
+        Number salaryNum = doc.get("base_salary", Number.class);
+        e.baseSalary = (salaryNum != null) ? salaryNum.doubleValue() : 0.0;
+
         e.medical = doc.getString("medical");
-        e.dependents = doc.getInteger("dependents");
+        e.dependents = doc.getInteger("dependents", 0);
         e.dateOfBirth = doc.getString("date_of_birth");
         e.dateHired = doc.getString("date_hired");
         e.email = doc.getString("email");
