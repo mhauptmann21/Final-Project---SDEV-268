@@ -7,6 +7,8 @@ import javafx.scene.layout.VBox;
 
 public class Payroll {
     private VBox panePayroll;
+    private PayrollGrid payrollGrid = new PayrollGrid();
+    private TaxesGrid taxesGrid = new TaxesGrid();
     
     public Payroll() {
         payroll();
@@ -27,13 +29,18 @@ public class Payroll {
         Label payrollLabel = new Label("Run Payroll for all Employees");
         // create buttons
         Button calculatePayrollBTN = new Button("Calculate Payroll");
-        //create event handler
+        Button printBTN = new Button("Approve and Print Report");
+
+        //create event handlers
         calculatePayrollBTN.setOnAction(e -> { 
             calculatePayroll();
         });
-
+        printBTN.setOnAction(e -> {
+            printReport();
+        });
+;
         //add to vbox
-        panePayroll.getChildren().addAll(payrollLabel, calculatePayrollBTN);
+        panePayroll.getChildren().addAll(payrollLabel, calculatePayrollBTN, taxesGrid.getTaxesGridPane(), payrollGrid.getPayrollGridPane(), printBTN);
 
     }
 
@@ -43,5 +50,9 @@ public class Payroll {
         //TODO: calculate gross payroll
         //TODO: calculate net payroll
 
+    }
+
+    private void printReport() {
+        //TODO: print the report
     }
 }

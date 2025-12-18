@@ -25,9 +25,8 @@ public class AdminNavBar {
         // Create buttons
         Button employeeBTN = new Button("Employee Demographics");
         Button salaryBTN = new Button("Salary Data");
-        Button payrollBTN = new Button("Payroll");
         Button timeBTN = new Button("Time Cards");
-        Button reportsBTN = new Button("Reports");
+        Button payrollBTN = new Button("Payroll");
         Button infoBTN = new Button("Application Information");
 
         // Set buttons min width
@@ -35,7 +34,6 @@ public class AdminNavBar {
         salaryBTN.setMinWidth(150);
         payrollBTN.setMinWidth(150);
         timeBTN.setMinWidth(150);
-        reportsBTN.setMinWidth(150);
         infoBTN.setMinWidth(150);
 
         // Create button event handlers
@@ -52,16 +50,12 @@ public class AdminNavBar {
         timeBTN.setOnAction(event -> {
             App.adminView.getVboxCenter().getChildren().setAll(App.adminView.getTimePage().getTimePane());
         });
-        // add reports button event handler
-        reportsBTN.setOnAction(event -> { 
-            App.adminView.getVboxCenter().getChildren().setAll(App.adminView.getReportPage().getReportPane());  
-        });
         // add info button event handler
         infoBTN.setOnAction(event -> {
             App.adminView.getVboxCenter().getChildren().setAll(App.adminView.getInfoPage().getInfoPane());
         });
 
         // Add to vbox
-        adminNavBar.getChildren().addAll(employeeBTN, salaryBTN, payrollBTN, timeBTN, reportsBTN, infoBTN);
+        adminNavBar.getChildren().addAll(employeeBTN, salaryBTN, timeBTN, payrollBTN, infoBTN);
     }
 }
