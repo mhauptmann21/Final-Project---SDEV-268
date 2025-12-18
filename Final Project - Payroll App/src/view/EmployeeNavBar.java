@@ -32,13 +32,15 @@ public class EmployeeNavBar {
 
         // Create button event handlers
         timeBTN.setOnAction(event -> {
-            App.employeeView.getEmployeeViewPane().setCenter(new Time().getTimePane());
+            App.employeeView.getEmployeeViewPane().setCenter(App.employeeView.getTime().getTimePane());
         });
-        /* 
+        
         paycheckBTN.setOnAction(event -> {
-            App.employeeView.getEmployeeViewPane().setCenter();// update with paycheck pane
+            // clear old paycheck calculation
+            App.employeeView.getPaycheck().clearPrevious();
+            //show page
+            App.employeeView.getEmployeeViewPane().setCenter(App.employeeView.getPaycheck().getPaycheckPane());
         });
-        */
 
         // Add to vbox
         employeeNavBar.getChildren().addAll(timeBTN, paycheckBTN);

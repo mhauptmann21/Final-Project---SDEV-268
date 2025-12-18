@@ -53,6 +53,18 @@ public class AdminView {
         return this.adminHome;
     }
 
+    public Info getInfoPage() {
+        return this.info;
+    }
+
+    public Report getReportPage() {
+        return this.report;
+    }
+
+    public Payroll getPayrollPage() {
+        return this.payroll;
+    }
+
     public void setCurrentEmployee(Employee emp) {
         employeePane.setEmployee(emp);
     }
