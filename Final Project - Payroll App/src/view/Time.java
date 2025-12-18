@@ -8,12 +8,14 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import server.Employee;
 import server.TimeEntry;
 import controllers.SessionController;
 import server.TimeEntryDAO;
+import javafx.scene.control.TextField;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -47,6 +49,9 @@ public class Time {
     private Label lockedLabel;
     private Button saveButton;
 
+    // Taxes grid
+    TaxesGrid taxesGrid = new TaxesGrid();
+
     public Time() {
         paneTime = new VBox(20);
         paneTime.setPadding(new Insets(25));
@@ -68,13 +73,16 @@ public class Time {
     
 
     private void buildUI() {
+        
         Employee user = SessionController.getCurrentUser();
         if (user == null) {
             paneTime.getChildren().add(new Label("ERROR: No logged in user."));
             return;
         }
+            
 
         this.employeeId = user.employeeId;
+    
 
 
         currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
@@ -163,8 +171,9 @@ public class Time {
         saveButton = new Button("Save");
         saveButton.setOnAction(e -> saveWeek());
 
-        paneTime.getChildren().addAll(title, employeeLabel, weekHeader, daysBox, saveButton);
+       
 
+        paneTime.getChildren().addAll(title, employeeLabel, weekHeader, daysBox, saveButton, taxesGrid.getTaxesGridPane());
     }
 
     private void saveWeek() {

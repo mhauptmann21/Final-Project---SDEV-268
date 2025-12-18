@@ -9,7 +9,7 @@ public class Paycheck {
     // vbox to hold calculated paycheck
     private VBox paycheckVBox = new VBox(10);
     // calcualte button
-    Button calculateBTN = new Button("Calcualate Paycheck");
+    private Button calculateBTN = new Button("Calculate Paycheck");
     
     public Paycheck() {
         paycheck();
@@ -38,7 +38,12 @@ public class Paycheck {
 
     private void handleCalculate() {
         //TODO: calcualte current pay without locking
-        //TODO: create elements to hold the paycheck info
+
+          // grids
+        PayrollGrid payrollGrid = new PayrollGrid();
+        TaxesGrid taxesGrid = new TaxesGrid();
+        
+        paycheckVBox.getChildren().addAll(taxesGrid.getTaxesGridPane(), payrollGrid.getPayrollGridPane());
 
         //update pane to show the paycheck
         panePaycheck.getChildren().setAll(paycheckVBox);

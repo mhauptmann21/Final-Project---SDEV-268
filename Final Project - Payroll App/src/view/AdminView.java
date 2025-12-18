@@ -15,6 +15,8 @@ public class AdminView {
     private Search search = new Search();
     private AdminHome adminHome;
     private AdminNavBar adminNavBar = new AdminNavBar();
+    private Info info = new Info();
+    private Payroll payroll = new Payroll();
     private Employee currentEmployee;
 
     public AdminView() {
@@ -55,10 +57,6 @@ public class AdminView {
 
     public Info getInfoPage() {
         return this.info;
-    }
-
-    public Report getReportPage() {
-        return this.report;
     }
 
     public Payroll getPayrollPage() {
