@@ -23,6 +23,11 @@ public class SecurityModule {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+
+        if(input == null) {
+            throw new IllegalArgumentException("Password cannot be null.");
+        }
+        
         return null;
     }
     

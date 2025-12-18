@@ -12,7 +12,9 @@ import javafx.scene.control.Alert;
 public class Salary {
     private VBox paneSalary;
     private final AdminView adminView;
+
     private Label salaryLabel = new Label("Salary Data");
+
     // Create text fields
     TextField departmentText = new TextField();
     TextField jobTypeText = new TextField();
@@ -68,9 +70,6 @@ public class Salary {
         medicalLabel.setMinWidth(100);
         dependentsLabel.setMinWidth(100);
 
-        // populate text fields
-        populateSalaryFields();
-
         // Create hboxes for data
         HBox departmentHbox = new HBox();
         HBox jobTypeHbox = new HBox();
@@ -125,6 +124,9 @@ public class Salary {
 
         // Add vbox to grid
         paneSalary.getChildren().add(vbox);
+
+        // populate text fields
+        populateSalaryFields();
     }
 
     private void populateSalaryFields() {
@@ -144,6 +146,7 @@ public class Salary {
             baseSalaryText.setText(String.valueOf(emp.baseSalary));
             medicalText.setText(String.valueOf(emp.medical));
             dependentsText.setText(String.valueOf(emp.dependents)); 
+
         }
     }   
 

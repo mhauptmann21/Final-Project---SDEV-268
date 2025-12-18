@@ -15,10 +15,7 @@ public class AdminView {
     private Search search = new Search();
     private AdminHome adminHome;
     private AdminNavBar adminNavBar = new AdminNavBar();
-    private Info info = new Info();
-    private Report report = new Report();
-    private Payroll payroll = new Payroll();
-    private Employee currentEmployee = null;
+    private Employee currentEmployee;
 
     public AdminView() {
         adminView();
@@ -69,7 +66,7 @@ public class AdminView {
     }
 
     public void setCurrentEmployee(Employee emp) {
-        this.currentEmployee = emp;
+        employeePane.setEmployee(emp);
     }
 
     public Employee getCurrentEmployee() {
@@ -83,9 +80,15 @@ public class AdminView {
     /* Create admin view method */
     private void adminView() {
         // Initialize panes
-        this.employeePane = new EmployeePane(this);
+        employeePane = new EmployeePane();
         this.salary = new Salary(this);
         this.adminHome = new AdminHome(paneAdminView);
+
+        search = new Search();
+        paneAdminView = new BorderPane();
+
+        paneAdminView.setTop(search.getSearchPane());
+        paneAdminView.setCenter(employeePane.getEmployeePane());
 
         // Add admin home to vbox
         vboxCenter.getChildren().add(adminHome.getAdminHomePane());
@@ -110,5 +113,7 @@ public class AdminView {
         paneAdminView.setTop(search.getSearchPane());
         // add admin nav bar to left of admin view pane
         paneAdminView.setLeft(adminNavBar.getAdminNavBar());
+
+
     }
 }
