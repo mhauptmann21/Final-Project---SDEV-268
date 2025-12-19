@@ -11,8 +11,8 @@ public class AdminView {
     private VBox vboxCenter = new VBox(30);
     private Salary salary;
     private EmployeePane employeePane;
-    private Time time = new Time();
     private Search search = new Search();
+    private AdminTime time = new AdminTime();
     private AdminHome adminHome;
     private AdminNavBar adminNavBar = new AdminNavBar();
     private Info info = new Info();
@@ -39,7 +39,7 @@ public class AdminView {
         return this.employeePane;
     }   
 
-    public Time getTimePage() {
+    public AdminTime getAdminTimePage() {
         return this.time;
     }   
     
