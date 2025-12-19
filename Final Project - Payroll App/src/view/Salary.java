@@ -30,7 +30,7 @@ public class Salary {
 
     private Employee currentEmployee;
 
-    public void SalaryPane() {
+    public Salary() {
         buildPane();
     }
 
