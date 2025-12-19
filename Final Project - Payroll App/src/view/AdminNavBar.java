@@ -56,7 +56,7 @@ public class AdminNavBar {
             App.adminView.getVboxCenter().getChildren().setAll(App.adminView.getPayrollPage().getPayrollPane());
         });
         timeBTN.setOnAction(event -> {
-            App.adminView.getVboxCenter().getChildren().setAll(App.adminView.getTimePage().getTimePane());
+            App.adminView.getVboxCenter().getChildren().setAll(App.adminView.getAdminTimePage().getAdminTimePane());
         });
         // add info button event handler
         infoBTN.setOnAction(event -> {
