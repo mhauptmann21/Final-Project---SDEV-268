@@ -45,7 +45,7 @@ public class Paycheck {
         
         paycheckVBox.getChildren().addAll(taxesGrid.getTaxesGridPane(), payrollGrid.getPayrollGridPane());
 
-        //update pane to show the paycheck
+        // update pane to show the paycheck
         panePaycheck.getChildren().setAll(paycheckVBox);
 
     }
