@@ -46,7 +46,6 @@ public class LoginDAO {
             emp.status = doc.getString("status");
             emp.department = doc.getString("department");
             emp.jobTitle = doc.getString("job_title");
-            emp.payType = doc.getString("pay_type");
 
             return emp;
 

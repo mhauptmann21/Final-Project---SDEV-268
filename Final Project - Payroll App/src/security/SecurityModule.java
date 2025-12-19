@@ -6,6 +6,8 @@ import java.security.NoSuchAlgorithmException;
 public class SecurityModule {
 
     public static String md5Hash(String input) {
+        if (input == null) return null;
+        
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(input.getBytes());

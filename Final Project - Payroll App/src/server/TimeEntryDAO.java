@@ -5,6 +5,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -160,5 +161,20 @@ public class TimeEntryDAO {
         }
 
         return total;
+    }
+
+    public static List<TimeEntry> getTimeEntriesByEmployeeId(ObjectId employeeId) {
+        List<TimeEntry> entries = new ArrayList<>();
+        for (Document doc : getCollection().find(eq("employee_id", employeeId))) {
+            TimeEntry t = new TimeEntry();
+            t.mongoId = doc.getObjectId("_id");
+            t.employeeId = doc.getObjectId("employee_id");
+            t.weekStart = doc.getString("weekStart");
+            t.hoursWorked = doc.getDouble("hoursWorked");
+            t.ptoHours = doc.getInteger("ptoHours");
+            t.isLocked = doc.getBoolean("isLocked");
+            entries.add(t);
+        }
+        return entries;
     }
 }

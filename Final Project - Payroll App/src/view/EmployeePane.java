@@ -21,12 +21,18 @@ public class EmployeePane {
     private TextField titleField = new TextField();
     private TextField firstField = new TextField();
     private TextField lastField = new TextField();
+    private TextField surField = new TextField();
     private TextField statusField = new TextField();
     private TextField dobField = new TextField();
-    private TextField payTypeField = new TextField();
+    private TextField genderField = new TextField();
     private TextField emailField = new TextField();
     private TextField usernameField = new TextField();
     private TextField passwordField = new TextField();
+    private TextField address1Field = new TextField();
+    private TextField address2Field = new TextField();
+    private TextField cityField = new TextField();
+    private TextField stateField = new TextField();
+    private TextField zipField = new TextField();
 
     private Employee currentEmployee;
 
@@ -56,13 +62,19 @@ public class EmployeePane {
         HBox deptBox = fieldRow("Department:", departmentField);
         HBox titleBox = fieldRow("Job Title:", titleField);
         HBox firstBox = fieldRow("First Name:", firstField);
+        HBox surBox = fieldRow("Surname:", surField);
         HBox lastBox = fieldRow("Last Name:", lastField);
         HBox statusBox = fieldRow("Status:", statusField);
         HBox dobBox = fieldRow("Birth Date:", dobField);
-        HBox payTypeBox = fieldRow("Pay Type:", payTypeField);
+        HBox genderBox = fieldRow("Gender:", genderField);
         HBox emailBox = fieldRow("Email:", emailField);
         HBox usernameBox = fieldRow("Username:", usernameField);
         HBox passwordBox = fieldRow("Password:", passwordField);
+        HBox address1Box = fieldRow("Address:", address1Field);
+        HBox address2Box = fieldRow("Address 2:", address2Field);
+        HBox cityBox = fieldRow("City:", cityField);
+        HBox stateBox = fieldRow("State:", stateField);
+        HBox zipBox = fieldRow("Zip Code:", zipField);
 
         VBox photoBox = new VBox(5, imgView);
         photoBox.setAlignment(Pos.CENTER);
@@ -84,13 +96,19 @@ public class EmployeePane {
                 deptBox,
                 titleBox,
                 firstBox,
+                surBox,
                 lastBox,
                 statusBox,
                 dobBox,
-                payTypeBox,
+                genderBox,
                 emailBox,
                 usernameBox,
                 passwordBox,
+                address1Box,
+                address2Box,
+                cityBox,
+                stateBox,
+                zipBox,
                 photoBox,
                 buttonBox
         );
@@ -106,14 +124,19 @@ public class EmployeePane {
         departmentField.setText(emp.department);
         titleField.setText(emp.jobTitle);
         firstField.setText(emp.firstName);
+        surField.setText(emp.surName);
         lastField.setText(emp.lastName);
         statusField.setText(emp.status);
         dobField.setText(emp.dateOfBirth);
-        payTypeField.setText(emp.payType);
+        genderField.setText(emp.gender);
         emailField.setText(emp.email);
         usernameField.setText(emp.username);
         passwordField.setText(emp.password);
-
+        address1Field.setText(emp.address1);
+        address2Field.setText(emp.address2);
+        cityField.setText(emp.city);
+        stateField.setText(emp.state);
+        zipField.setText(emp.zip);
     }
 
     private HBox fieldRow(String labelText, TextField field) {
@@ -139,13 +162,19 @@ public class EmployeePane {
         departmentField.setText(emp.department);
         titleField.setText(emp.jobTitle);
         firstField.setText(emp.firstName);
+        surField.setText(emp.surName);
         lastField.setText(emp.lastName);
         statusField.setText(emp.status);
         dobField.setText(emp.dateOfBirth);
-        payTypeField.setText(emp.payType);
+        genderField.setText(emp.gender);
         emailField.setText(emp.email);
         usernameField.setText(emp.username);
         passwordField.setText(emp.password);
+        address1Field.setText(emp.address1);
+        address2Field.setText(emp.address2);
+        cityField.setText(emp.city);
+        stateField.setText(emp.state);
+        zipField.setText(emp.zip);
     }
 
     private Employee buildEmployeeFromFields() {
@@ -161,13 +190,19 @@ public class EmployeePane {
         emp.department = departmentField.getText();
         emp.jobTitle = titleField.getText();
         emp.firstName = firstField.getText();
+        emp.surName = surField.getText();
         emp.lastName = lastField.getText();
         emp.status = statusField.getText();
         emp.dateOfBirth = dobField.getText();
-        emp.payType = payTypeField.getText();
+        emp.gender = genderField.getText();
         emp.email = emailField.getText();
         emp.username = usernameField.getText();
         emp.password = passwordField.getText();
+        emp.address1 = address1Field.getText();
+        emp.address2 = address2Field.getText();
+        emp.city = cityField.getText();
+        emp.state = stateField.getText();
+        emp.zip = zipField.getText();
         
 
         return emp;
@@ -178,13 +213,19 @@ public class EmployeePane {
         departmentField.clear();
         titleField.clear();
         firstField.clear();
+        surField.clear();
         lastField.clear();
         statusField.clear();
         dobField.clear();
-        payTypeField.clear();
+        genderField.clear();
         emailField.clear();
         usernameField.clear();
         passwordField.clear();
+        address1Field.clear();
+        address2Field.clear();
+        cityField.clear();
+        stateField.clear();
+        zipField.clear();
     }
 
     /*  ACTIONS  */

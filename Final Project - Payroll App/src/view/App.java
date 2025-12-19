@@ -23,8 +23,6 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        System.out.println(Database.getDatabase().getName());
-
         adminView = new AdminView(); // IMPORTANT!
 
         mainPane.setPadding(new Insets(10));
