@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import server.Employee;
+import server.EmployeeDAO;
 
 public class Search {
     private HBox paneSearch;
@@ -116,7 +117,14 @@ public class Search {
             displayEmployeeFoundMessage();
 
             // set current employee in AdminView ONLY if found
-            App.adminView.setCurrentEmployee(this.foundEmployee);
+             App.adminView.setCurrentEmployee(this.foundEmployee);
+
+            // if (this.foundEmployee != null) {
+            //     App.adminView.getSalaryPage().refresh();
+                
+            //     AdminTime adminTimeView = new AdminTime(foundEmployee);
+            //     App.adminView.getAdminTime(adminTimeView.getAdminTimePane());
+            // }
          
         } else {
             displayEmployeeNotFoundMessage();

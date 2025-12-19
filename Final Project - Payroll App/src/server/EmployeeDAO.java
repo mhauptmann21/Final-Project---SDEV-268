@@ -23,22 +23,26 @@ public class EmployeeDAO {
     /* INSERT EMPLOYEE (FULL) */
 
     public static void insertEmployee(Employee e) {
-
         Document doc = new Document()
                 .append("first_name", e.firstName)
                 .append("last_name", e.lastName)
                 .append("status", e.status)
-                .append("pay_type", e.payType)
-                .append("base_salary", e.baseSalary)
-                .append("medical", e.medical)
-                .append("dependents", e.dependents)
                 .append("date_of_birth", e.dateOfBirth)
                 .append("date_hired", e.dateHired)
                 .append("email", e.email)
                 .append("username", e.username)
                 .append("department", e.department)
                 .append("job_title", e.jobTitle)
-                .append("password", SecurityModule.md5Hash(e.password));
+                .append("password", SecurityModule.md5Hash(e.password))
+                .append("address1", e.address1)
+                .append("address2", e.address2)
+                .append("city", e.city)
+                .append("state", e.state)
+                .append("zip", e.zip);
+
+        if (e.password != null && !e.password.isEmpty()) {
+            doc.append("password", SecurityModule.md5Hash(e.password));
+        }
 
         getCollection().insertOne(doc);
         e.mongoId = doc.getObjectId("_id");
@@ -67,10 +71,6 @@ public class EmployeeDAO {
                     .append("username", username)
                     .append("password", SecurityModule.md5Hash(password))
                     .append("status", "ACTIVE")
-                    .append("pay_type", "SALARY")
-                    .append("base_salary", 0.0)
-                    .append("medical", "SINGLE")
-                    .append("dependents", 0)
                     .append("date_of_birth", "2000-01-01")
                     .append("date_hired", java.time.LocalDate.now().toString())
                     .append("department", "NONE")
@@ -90,23 +90,49 @@ public class EmployeeDAO {
     public static void updateEmployee(Employee e) {
         if (e.mongoId == null) return;
 
-        UpdateResult result = getCollection().updateOne(
-                eq("_id", e.mongoId),
-                new Document("$set", new Document()
-                        .append("first_name", e.firstName)
-                        .append("last_name", e.lastName)
-                        .append("status", e.status)
-                        .append("pay_type", e.payType)
-                        .append("base_salary", e.baseSalary)
-                        .append("medical", e.medical)
-                        .append("dependents", e.dependents)
-                        .append("date_of_birth", e.dateOfBirth)
-                        .append("date_hired", e.dateHired)
-                        .append("email", e.email)
-                        .append("department", e.department)
-                        .append("job_title", e.jobTitle)
-                )
-        );
+        Document updateDoc = new Document();
+
+        if (e.firstName != null && !e.firstName.isEmpty()) updateDoc.append("first_name", e.firstName);
+        if (e.surName != null && !e.surName.isEmpty()) updateDoc.append("sur_name", e.surName);
+        if (e.lastName != null && !e.lastName.isEmpty()) updateDoc.append("last_name", e.lastName);
+        if (e.status != null && !e.status.isEmpty()) updateDoc.append("status", e.status);
+        if (e.dateOfBirth != null && !e.dateOfBirth.isEmpty()) updateDoc.append("date_of_birth", e.dateOfBirth);
+        if (e.gender != null && !e.gender.isEmpty()) updateDoc.append("gender", e.gender);
+        if (e.dateHired != null && !e.dateHired.isEmpty()) updateDoc.append("date_hired", e.dateHired);
+        if (e.email != null && !e.email.isEmpty()) updateDoc.append("email", e.email);
+        if (e.department != null && !e.department.isEmpty()) updateDoc.append("department", e.department);
+        if (e.jobTitle != null && !e.jobTitle.isEmpty()) updateDoc.append("job_title", e.jobTitle);
+        if (e.username != null && !e.username.isEmpty()) updateDoc.append("username", e.username);
+        if (e.password != null && !e.password.isEmpty()) updateDoc.append("password", SecurityModule.md5Hash(e.password));
+        if (e.address1 != null && !e.address1.isEmpty()) updateDoc.append("address1", e.address1);
+        if (e.address2 != null && !e.address2.isEmpty()) updateDoc.append("address2", e.address2);
+        if (e.city != null && !e.city.isEmpty()) updateDoc.append("city", e.city);
+        if (e.state != null && !e.state.isEmpty()) updateDoc.append("state", e.state);
+        if (e.zip != null && !e.zip.isEmpty()) updateDoc.append("zip", e.zip);
+
+        if (e.password != null && !e.password.isEmpty()) {
+            updateDoc.append("password", SecurityModule.md5Hash(e.password));
+        }
+
+        if (updateDoc.isEmpty()) {
+            System.out.println("No fields to update for employee " + e.mongoId);
+            return;
+        }
+
+        try {
+            UpdateResult result = getCollection().updateOne(
+                    eq("_id", e.mongoId),
+                    new Document("$set", updateDoc)
+            );
+
+            if (result.getModifiedCount() > 0) {
+                System.out.println("Employee updated successfully.");
+            } else {
+                System.out.println("No changes were made.");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /*  DELETE EMPLOYEE  */
@@ -141,13 +167,6 @@ public class EmployeeDAO {
         e.firstName = doc.getString("first_name");
         e.lastName = doc.getString("last_name");
         e.status = doc.getString("status");
-        e.payType = doc.getString("pay_type");
-
-        Number salaryNum = doc.get("base_salary", Number.class);
-        e.baseSalary = (salaryNum != null) ? salaryNum.doubleValue() : 0.0;
-
-        e.medical = doc.getString("medical");
-        e.dependents = doc.getInteger("dependents", 0);
         e.dateOfBirth = doc.getString("date_of_birth");
         e.dateHired = doc.getString("date_hired");
         e.email = doc.getString("email");

@@ -79,7 +79,7 @@ public class AdminView {
     private void adminView() {
         // Initialize panes
         employeePane = new EmployeePane();
-        this.salary = new Salary(this);
+        salary = new Salary();
         this.adminHome = new AdminHome(paneAdminView);
 
         search = new Search();
