@@ -41,7 +41,15 @@ public class AdminNavBar {
             App.adminView.getVboxCenter().getChildren().setAll(App.adminView.getEmployeePane().getEmployeePane());
         });
         salaryBTN.setOnAction(event -> {
-            App.adminView.getVboxCenter().getChildren().setAll(App.adminView.getSalaryPage().getSalaryPane());
+            VBox center = App.adminView.getVboxCenter();
+            VBox pane = App.adminView.getSalaryPage().getSalaryPane();
+
+            if (pane == null) {
+                System.out.println("Salary pane is null");
+                return;
+            }
+
+            center.getChildren().setAll(pane);
         });
         // add payroll button event handler
         payrollBTN.setOnAction(event -> {

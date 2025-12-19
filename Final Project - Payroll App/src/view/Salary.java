@@ -30,7 +30,7 @@ public class Salary {
 
     private Employee currentEmployee;
 
-    public void SalaryPane() {
+    public Salary() {
         buildPane();
     }
 
@@ -65,6 +65,7 @@ public class Salary {
         buttonBox.setAlignment(Pos.CENTER);
 
         paneSalary.getChildren().addAll(
+                salaryLabel,
                 idBox,
                 jobTypeBox,
                 deptBox,
