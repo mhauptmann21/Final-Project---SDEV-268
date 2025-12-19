@@ -1,6 +1,7 @@
 package view;
 
 import server.Employee;
+import server.SalaryRecord;
 import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
@@ -32,7 +33,10 @@ public class AdminView {
     }
 
     public Salary getSalaryPage() {
-        return this.salary;
+        if (salary == null) {
+            salary = new Salary();
+        }
+        return salary;
     }   
 
     public EmployeePane getEmployeePane() {
@@ -65,6 +69,7 @@ public class AdminView {
 
     public void setCurrentEmployee(Employee emp) {
         employeePane.setEmployee(emp);
+        salary.setSalary(emp);
     }
 
     public Employee getCurrentEmployee() {

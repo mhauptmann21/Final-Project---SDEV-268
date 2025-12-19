@@ -18,28 +18,16 @@ public class SalaryDAO {
         return db.getCollection("employees");
     }
 
-    public static SalaryRecord getByEmployeeId(Object employeeId) {
-        Document doc = getCollection()
-                .find(eq("employeeId", employeeId))
-                .first();
-
-        if (doc == null) return null;
-
-        SalaryRecord s = new SalaryRecord();
-        s.employeeId = doc.getObjectId("employeeId");
-        s.salaryType = doc.getString("salary_type");
-        s.baseSalary = ((Number) doc.get("base_salary")).doubleValue();
-        s.medical = doc.getString("medical");
-        s.dependents = doc.getInteger("dependents", 0);
-
-        return s;
+    public static Employee getEmployeeById(ObjectId id) {
+        Document doc = getCollection().find(eq("_id", id)).first();
+        return (doc == null) ? null : documentToEmployee(doc);
     }
 
     public static void save(SalaryRecord s) {
         Document doc = new Document()
                 .append("employeeId", s.employeeId)
-                .append("salaryType", s.salaryType)
-                .append("baseSalary", s.baseSalary)
+                .append("salary_type", s.salaryType)
+                .append("base_salary", s.baseSalary)
                 .append("medical", s.medical)
                 .append("dependents", s.dependents);
 
@@ -52,9 +40,9 @@ public class SalaryDAO {
         UpdateResult result = getCollection().updateOne(
                 eq("_id", s.mongoId),
                 new Document("$set", new Document()
-                        .append("salaryType", s.salaryType)
+                        .append("salary_type", s.salaryType)
                         .append("medical", s.medical)
-                        .append("baseSalary", s.baseSalary)
+                        .append("base_salary", s.baseSalary)
                         .append("dependents", s.dependents)
                         .append("employeeId", s.employeeId)
                 )

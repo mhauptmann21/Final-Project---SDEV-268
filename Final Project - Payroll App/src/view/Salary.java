@@ -65,6 +65,7 @@ public class Salary {
         buttonBox.setAlignment(Pos.CENTER);
 
         paneSalary.getChildren().addAll(
+                salaryLabel,
                 idBox,
                 jobTypeBox,
                 deptBox,
