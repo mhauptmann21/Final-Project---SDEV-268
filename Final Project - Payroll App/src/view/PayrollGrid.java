@@ -39,5 +39,13 @@ public class PayrollGrid {
         payrollGridPane.add(netLabel, 0, 3);
         payrollGridPane.add(netField, 1, 3);
     }     
+
+    public void updateTotals(double hours, double pto, double gross, double net) {
+        hoursField.setText(String.format("%.2f", hours));
+        ptoField.setText(String.format("%.2f", pto));
+        grossField.setText("$" + String.format("%.2f", gross));
+        netField.setText("$" + String.format("%.2f", net));
+    }
+
 }
 

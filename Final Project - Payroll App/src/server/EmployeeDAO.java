@@ -1,6 +1,7 @@
 package server;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
@@ -8,6 +9,11 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import static com.mongodb.client.model.Filters.eq;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.mongodb.client.MongoCursor;
 
 import security.SecurityModule;
 
@@ -176,4 +182,39 @@ public class EmployeeDAO {
 
         return e;
     }
+
+    public List<Employee> getAllEmployees() {
+
+    List<Employee> employees = new ArrayList<>();
+    
+
+    try (MongoCursor<Document> cursor = getCollection().find().iterator()) {  // private static method can be used here
+        while (cursor.hasNext()) {
+            Document doc = cursor.next();
+
+            Employee emp = new Employee();
+
+            Object rateObj = doc.get("hourly_rate");
+            Double hourlyRate = (rateObj instanceof Number) ? ((Number) rateObj).doubleValue() : null;
+            emp.setHourlyRate(hourlyRate);
+
+            Object baseSalaryObj = doc.get("base_salary");
+            Double baseSalary = (baseSalaryObj instanceof Number) ? ((Number) baseSalaryObj).doubleValue() : null;
+            emp.setBaseSalary(baseSalary);
+
+            emp.setId(doc.getObjectId("_id").toString());
+            emp.setFirstName(doc.getString("first_name"));
+            emp.setLastName(doc.getString("last_name"));
+            emp.setPayType(doc.getString("pay_type"));
+            emp.setMedicalType(doc.getString("medical_type"));
+            emp.setDependents(doc.getInteger("dependents"));
+            emp.setWeeklyHours(doc.getList("weekly_hours", Double.class));
+
+            employees.add(emp);
+        }
+    }
+
+    return employees;
+}
+
 }

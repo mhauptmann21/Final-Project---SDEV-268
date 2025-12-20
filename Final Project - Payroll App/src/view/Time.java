@@ -27,7 +27,7 @@ public class Time {
     private Label weekLabel;
     private Button nextWeekButton;
     private Button prevWeekButton;
-    private int employeeId;
+    private String employeeId;
 
     // ChoiceBoxes for each day
     private ChoiceBox<Integer> sundayHours;

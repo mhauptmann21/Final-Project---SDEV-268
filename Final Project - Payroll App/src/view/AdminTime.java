@@ -26,7 +26,7 @@ public class AdminTime {
     private Label weekLabel;
     private Button nextWeekButton;
     private Button prevWeekButton;
-    private int employeeId;
+    private String employeeId;
 
     // ChoiceBoxes for each day
     private ChoiceBox<Integer> sundayHours;
@@ -65,11 +65,10 @@ public class AdminTime {
 
         buildUI();
         updateWeekLabel();
-        loadSavedWeek();
 
     }
 
-    public VBox getAdminTimePane() {
+    public VBox getTimePane() {
         return this.paneTime;
     }
 
@@ -211,8 +210,7 @@ public class AdminTime {
         
     }
 
-    private void loadSavedWeek() {
-        System.out.println("Loading time card for employeeId: " + employeeId);
+    public void loadSavedWeek() {
 
         String weekStartStr = currentWeekStart.toString();
 
@@ -259,5 +257,13 @@ public class AdminTime {
         LocalDate end = currentWeekStart.plusDays(6);
         weekLabel.setText("Week of " + currentWeekStart + " to " + end);
     }
+
+    public void setTime(Employee employee) {
+        this.employee = employee;
+
+        updateWeekLabel();   // if you have this method
+        loadSavedWeek();     // uses the class field employee
+    }
+
 
 }

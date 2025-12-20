@@ -90,7 +90,7 @@ public class TimeEntryDAO {
     }
 
     // GET entries for a week range
-    public static List<TimeEntry> getWeek(int employeeId, String startDate, String endDate) {
+    public static List<TimeEntry> getWeek(String employeeId, String startDate, String endDate) {
         LocalDate start = getWeekStart(startDate);
         LocalDate end = getWeekStart(endDate);
 
@@ -117,7 +117,7 @@ public class TimeEntryDAO {
     }
 
     // LOCK week
-    public static void lockWeek(int employeeId, String weekStart, String weekEnd) {
+    public static void lockWeek(String employeeId, String weekStart, String weekEnd) {
         locks().updateOne(
                 and(
                         eq("employeeId", employeeId),
@@ -129,7 +129,7 @@ public class TimeEntryDAO {
     }
 
     // UNLOCK week
-    public static void unlockWeek(int employeeId, String weekStart) {
+    public static void unlockWeek(String employeeId, String weekStart) {
         locks().updateOne(
                 and(
                         eq("employeeId", employeeId),
@@ -140,7 +140,7 @@ public class TimeEntryDAO {
     }
 
     // Check if locked
-    public static boolean areEntriesLocked(int employeeId, String weekStart) {
+    public static boolean areEntriesLocked(String employeeId, String weekStart) {
         Document doc = locks().find(
                 and(
                         eq("employeeId", employeeId),
@@ -153,7 +153,7 @@ public class TimeEntryDAO {
     }
 
     // Get weekly hours
-    public static double getWeeklyHours(int employeeId) {
+    public static double getWeeklyHours(String employeeId) {
         double total = 0;
 
         for (Document doc : timeEntries().find(eq("employeeId", employeeId))) {

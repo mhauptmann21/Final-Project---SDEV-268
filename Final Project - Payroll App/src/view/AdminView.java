@@ -1,18 +1,21 @@
 package view;
 
+import java.util.Collection;
+import java.util.List;
 import server.Employee;
 import server.SalaryRecord;
 import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import server.EmployeeDAO;
 
 public class AdminView {
     private BorderPane paneAdminView = new BorderPane();
     private VBox vboxCenter = new VBox(30);
     private Salary salary;
+    private AdminTime time;
     private EmployeePane employeePane;
-    private Time time = new Time();
     private Search search = new Search();
     private AdminHome adminHome;
     private AdminNavBar adminNavBar = new AdminNavBar();
@@ -43,7 +46,7 @@ public class AdminView {
         return this.employeePane;
     }   
 
-    public Time getTimePage() {
+    public AdminTime getTimePage() {
         return this.time;
     }   
     
@@ -70,7 +73,9 @@ public class AdminView {
     public void setCurrentEmployee(Employee emp) {
         employeePane.setEmployee(emp);
         salary.setSalary(emp);
+        time.setTime(emp);
     }
+
 
     public Employee getCurrentEmployee() {
         return this.currentEmployee;
@@ -83,8 +88,14 @@ public class AdminView {
     /* Create admin view method */
     private void adminView() {
         // Initialize panes
+        EmployeeDAO dao = new EmployeeDAO();
+        List<Employee> employeeList = dao.getAllEmployees();
+
         employeePane = new EmployeePane();
         salary = new Salary();
+        time = new AdminTime();
+        payroll = new Payroll();
+        payroll.setEmployees(employeeList);
         this.adminHome = new AdminHome(paneAdminView);
 
         search = new Search();
