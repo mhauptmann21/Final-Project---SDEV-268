@@ -1,18 +1,51 @@
-## Getting Started
+## Payroll App:
+This project is a payroll management application created using Java, JavaFx, and MongoDB.
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+This project uses a modular design, meaning different parts of the program are separated into folders based on their purpose. This makes the application easier to maintain, update, and debug.
 
-## Folder Structure
+## Project Structure:
+The project is organized into the following main components:
 
-The workspace contains two folders by default, where:
+App.java - starts the application
+view/ - Contains the graphical user interface (GUI) created with JavaFx
+controllers/ - Includes helper functions such as payroll calculations and input validation.  Handles employee data and payroll-related information
+server/ - Stores employee records and generated payroll reports
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+## Features:
+GUI using JavaFx
+Payroll calculations based on employee data
+Organized and modular code structure
+Error handling for user input
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+Requirements:
+Java SDK 25 or newer
+JavaFx 25 or newer
+Mongo 5.5.1
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+How to Run the Program:
+Open Zipped Reposoity File in VS Code
+Add Mongo and JavaFX to Java Project Referenced Libraries
+Update lauch.json to include:
 
-## Dependency Management
+"type": "java",
+            "name": "App",
+            "request": "launch",
+            "vmArgs": "--module-path /"your path and javafx version"/lib --add-modules javafx.controls,javafx.fxml",
+            "mainClass": "view.App",
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+Add settings.json with:
+
+
+{
+  "java.project.referencedLibraries": [
+    "lib/**/*.jar",
+    include paths to javafx and mongodb libraries
+  ]
+}
+
+Navigate to src/view/App.java
+Press Run Java button (Play Button)
+
+
+Design Overview:
+This application uses a modular design by separating the user interface, payroll logic, and utility functions into different modules. This structure makes the code easier to understand, maintain, and update as the project grows.
